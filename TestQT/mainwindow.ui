@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QTabWidget" name="tabWidget">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>801</width>
+      <height>601</height>
+     </rect>
+    </property>
+    <property name="currentIndex">
+     <number>4</number>
+    </property>
+    <widget class="QWidget" name="tabQLMH">
+     <attribute name="title">
+      <string>Quản lý môn học</string>
+     </attribute>
+    </widget>
+    <widget class="QWidget" name="tabQLSV">
+     <attribute name="title">
+      <string>Quản lý sinh viên</string>
+     </attribute>
+    </widget>
+    <widget class="QWidget" name="tabQLLSV">
+     <attribute name="title">
+      <string>Quản lý lớp sinh viên</string>
+     </attribute>
+    </widget>
+    <widget class="QWidget" name="tabND">
+     <attribute name="title">
+      <string>Nhập điểm</string>
+     </attribute>
+    </widget>
+    <widget class="QWidget" name="tabLTC">
+     <attribute name="title">
+      <string>Quản lý lớp tín chỉ</string>
+     </attribute>
+     <widget class="QWidget" name="widget" native="true">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>801</width>
+        <height>161</height>
+       </rect>
+      </property>
+      <widget class="QLineEdit" name="lineMMH">
+       <property name="geometry">
+        <rect>
+         <x>100</x>
+         <y>20</y>
+         <width>113</width>
+         <height>24</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>20</y>
+         <width>71</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Mã môn học:</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_2">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>60</y>
+         <width>71</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Niên khóa:</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineNK">
+       <property name="geometry">
+        <rect>
+         <x>100</x>
+         <y>60</y>
+         <width>113</width>
+         <height>24</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QSpinBox" name="spNHOM">
+       <property name="geometry">
+        <rect>
+         <x>100</x>
+         <y>110</y>
+         <width>42</width>
+         <height>25</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_3">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>110</y>
+         <width>71</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Nhóm:</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_4">
+       <property name="geometry">
+        <rect>
+         <x>290</x>
+         <y>20</y>
+         <width>121</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Số sinh viên tối thiểu: </string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_5">
+       <property name="geometry">
+        <rect>
+         <x>290</x>
+         <y>70</y>
+         <width>111</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Số sinh viên tối đa: </string>
+       </property>
+      </widget>
+      <widget class="QSpinBox" name="spMINSV">
+       <property name="geometry">
+        <rect>
+         <x>420</x>
+         <y>10</y>
+         <width>42</width>
+         <height>25</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QSpinBox" name="sqMAXSV">
+       <property name="geometry">
+        <rect>
+         <x>420</x>
+         <y>70</y>
+         <width>42</width>
+         <height>25</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="btnThem">
+       <property name="geometry">
+        <rect>
+         <x>580</x>
+         <y>10</y>
+         <width>80</width>
+         <height>24</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Thêm</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="btnXoa">
+       <property name="geometry">
+        <rect>
+         <x>580</x>
+         <y>50</y>
+         <width>80</width>
+         <height>24</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Xóa</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="btnSua">
+       <property name="geometry">
+        <rect>
+         <x>580</x>
+         <y>90</y>
+         <width>80</width>
+         <height>24</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Hiệu chỉnh</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="widget_2" native="true">
+      <property name="geometry">
+       <rect>
+        <x>-1</x>
+        <y>159</y>
+        <width>801</width>
+        <height>411</height>
+       </rect>
+      </property>
+      <widget class="QTableWidget" name="tblDSLTC">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>10</y>
+         <width>801</width>
+         <height>331</height>
+        </rect>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>801</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="columnCount">
+        <number>6</number>
+       </property>
+       <attribute name="horizontalHeaderMinimumSectionSize">
+        <number>23</number>
+       </attribute>
+       <attribute name="horizontalHeaderDefaultSectionSize">
+        <number>133</number>
+       </attribute>
+       <column>
+        <property name="text">
+         <string>Mã MH</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Niên khóa</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Nhóm</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Số sinh viên tối thiểu</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Số sinh viên tối đa</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Còn trống</string>
+        </property>
+       </column>
+      </widget>
+      <widget class="QPushButton" name="btnGhiFile">
+       <property name="geometry">
+        <rect>
+         <x>680</x>
+         <y>350</y>
+         <width>91</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Ghi file</string>
+       </property>
+      </widget>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="tabDK">
+     <attribute name="title">
+      <string>Đăng kí tín chỉ</string>
+     </attribute>
+    </widget>
+    <widget class="QWidget" name="tabXBC">
+     <attribute name="title">
+      <string>Xuất báo cáo</string>
+     </attribute>
+    </widget>
+   </widget>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
