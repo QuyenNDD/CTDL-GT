@@ -229,3 +229,51 @@ void DocDanhSachLopTinChi(List_LTC& dsLTC, const char* filename) {
 
     fclose(f);
 }
+
+bool TimMaMonHoc(treeMH root, const char* maMH){
+    while (root != NULL){
+        int cmp = strcmp(maMH, root->mh.MAMH);
+        if (cmp == 0) return true;
+        else if (cmp > 0) {
+            root = root->right;
+        }else {
+            root = root->left;
+        }
+    }
+    return false;
+}
+
+int XoaLTC(List_LTC &ds, int maLtc){
+    for (int i = 0; i < ds.n; i++){
+        LopTinChi* ltc = ds.nodes[i];
+        if (ltc->MALOPTC == maLtc){
+            if (ltc->dssvdk != NULL){
+                return -1; // Lớp đã có sinh viên đăng kí
+            }
+            delete ltc;
+            for (int j = i; j < ds.n - 1; j++){
+                ds.nodes[j] = ds.nodes[j + 1];
+            }
+            ds.n--;
+            return 1; // Đã xóa
+        }
+    }
+    return 0; // Không tìm thấy;
+}
+
+int HieuChinhLTC(List_LTC &ds, int maLtc, const LopTinChi& ltcMoi){
+    for (int i = 0; i < ds.n; i++){
+        LopTinChi* ltc = ds.nodes[i];
+        if (ltc->MALOPTC == maLtc){
+            strcpy(ltc->MAMH, ltcMoi.MAMH);
+            strcpy(ltc->NienKhoa, ltcMoi.NienKhoa);
+            ltc->Hocky = ltcMoi.Hocky;
+            ltc->Nhom = ltcMoi.Nhom;
+            ltc->sosvmin = ltcMoi.sosvmin;
+            ltc->sosvmax = ltcMoi.sosvmax;
+            ltc->huylop = ltcMoi.huylop;
+            return 1; //Đã sửa
+        }
+    }
+    return 0; // Không tìm thấy
+}

@@ -131,7 +131,7 @@
       <widget class="QLabel" name="label_4">
        <property name="geometry">
         <rect>
-         <x>290</x>
+         <x>240</x>
          <y>20</y>
          <width>121</width>
          <height>16</height>
@@ -144,8 +144,8 @@
       <widget class="QLabel" name="label_5">
        <property name="geometry">
         <rect>
-         <x>290</x>
-         <y>70</y>
+         <x>240</x>
+         <y>60</y>
          <width>111</width>
          <height>16</height>
         </rect>
@@ -157,18 +157,18 @@
       <widget class="QSpinBox" name="spMINSV">
        <property name="geometry">
         <rect>
-         <x>420</x>
+         <x>370</x>
          <y>10</y>
          <width>42</width>
          <height>25</height>
         </rect>
        </property>
       </widget>
-      <widget class="QSpinBox" name="sqMAXSV">
+      <widget class="QSpinBox" name="spMAXSV">
        <property name="geometry">
         <rect>
-         <x>420</x>
-         <y>70</y>
+         <x>370</x>
+         <y>50</y>
          <width>42</width>
          <height>25</height>
         </rect>
@@ -213,13 +213,49 @@
         <string>Hiệu chỉnh</string>
        </property>
       </widget>
+      <widget class="QLabel" name="label_6">
+       <property name="geometry">
+        <rect>
+         <x>240</x>
+         <y>110</y>
+         <width>71</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Học kỳ:</string>
+       </property>
+      </widget>
+      <widget class="QSpinBox" name="spHK">
+       <property name="geometry">
+        <rect>
+         <x>370</x>
+         <y>110</y>
+         <width>42</width>
+         <height>25</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="ckHuy">
+       <property name="geometry">
+        <rect>
+         <x>450</x>
+         <y>20</y>
+         <width>77</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Hủy lớp</string>
+       </property>
+      </widget>
      </widget>
      <widget class="QWidget" name="widget_2" native="true">
       <property name="geometry">
        <rect>
-        <x>-1</x>
-        <y>159</y>
-        <width>801</width>
+        <x>0</x>
+        <y>160</y>
+        <width>791</width>
         <height>411</height>
        </rect>
       </property>
@@ -230,7 +266,7 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>10</y>
+         <y>0</y>
          <width>801</width>
          <height>331</height>
         </rect>
@@ -241,15 +277,23 @@
          <height>16777215</height>
         </size>
        </property>
+       <property name="rowCount">
+        <number>0</number>
+       </property>
        <property name="columnCount">
-        <number>6</number>
+        <number>9</number>
        </property>
        <attribute name="horizontalHeaderMinimumSectionSize">
         <number>23</number>
        </attribute>
        <attribute name="horizontalHeaderDefaultSectionSize">
-        <number>133</number>
+        <number>88</number>
        </attribute>
+       <column>
+        <property name="text">
+         <string>Mã lớp tín chỉ</string>
+        </property>
+       </column>
        <column>
         <property name="text">
          <string>Mã MH</string>
@@ -258,6 +302,11 @@
        <column>
         <property name="text">
          <string>Niên khóa</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Học kỳ</string>
         </property>
        </column>
        <column>
@@ -278,6 +327,11 @@
        <column>
         <property name="text">
          <string>Còn trống</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Hủy lớp</string>
         </property>
        </column>
       </widget>
