@@ -66,10 +66,20 @@ struct List_LTC {
     LopTinChi* nodes[MAX_LTC];
 };
 
-void GhiMonHoc_LNR(treeMH t, FILE* f, int& count);
-void GhiDanhSachMonHoc(treeMH t, const char* filename);
+extern treeMH dsMH;
+
+int DemSoLuongMonHoc(treeMH root);
+treeMH SearchTree(treeMH root,const char* mamh);
+void Insert_MonHoc(treeMH &root, MonHoc mh);
+void SaveFileMonHoc(treeMH root, QTextStream &out);
 void ThemMonHocVaoCay(treeMH& t, const MonHoc& mh);
-void DocDanhSachMonHoc(treeMH& t, const char* filename);
+void GhiDanhSachMonHoc(treeMH t, const char* filename);
+int DocDanhSachMonHoc(treeMH &root, const QString& tenfile);
+bool SuaMonHoc(treeMH root, const MonHoc& monHocMoi);
+int RemoveTreeMH(treeMH &root,const char *mamh);
+void LuuMonHocVaoMang(treeMH root, nodeMH* ds[], int &n);
+void SapXepTangTheoTenMH(nodeMH* ds[], int n);
+bool MonHocDaDuocDangKy(List_LTC &dsLTC, const char* mamh);
 
 void GhiDanhSachLopSV(const DS_LOPSV& dsLop, const char* filename);
 void DocDanhSachLopSV(DS_LOPSV& dsLop, const char* filename);

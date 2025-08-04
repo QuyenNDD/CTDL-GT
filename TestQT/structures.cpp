@@ -1,6 +1,50 @@
 #include "structures.h"
 #include <cstdio>
 #include <cstring>
+#include <QFile>
+#include <QTextStream>
+#include <QMessageBox>
+#include <QDebug>
+//Mon hoc
+
+treeMH SearchTree(treeMH root,const char* mamh) {
+    while (root != nullptr) {
+        int cmp = strcmp(mamh, root->mh.MAMH);
+        if (cmp == 0)
+            return root;
+        else if (cmp < 0)
+            root = root->left;
+        else
+            root = root->right;
+    }
+    return nullptr;
+}
+int DemSoLuongMonHoc(treeMH root) {
+    if (root == NULL) return 0;
+    return 1 + DemSoLuongMonHoc(root->left) + DemSoLuongMonHoc(root->right);
+}
+void Insert_MonHoc(treeMH &root, MonHoc mh) {
+    if (root == nullptr) {
+        root = new nodeMH;
+        root->mh = mh;
+        root->left = root->right = nullptr;
+    } else if (strcmp(mh.MAMH, root->mh.MAMH) < 0) {
+        Insert_MonHoc(root->left, mh);
+    } else if (strcmp(mh.MAMH, root->mh.MAMH) > 0) {
+        Insert_MonHoc(root->right,mh);
+    }
+}
+void SaveFileMonHoc(treeMH root, QTextStream &out) {
+    if (root != NULL) {
+        out << root->mh.MAMH << "|"
+            << root->mh.TENMH << "|"
+            << root->mh.STCLT << "|"
+            << root->mh.STCTH << "\n";
+
+        SaveFileMonHoc(root->left, out);
+        SaveFileMonHoc(root->right, out);
+    }
+}
 
 void GhiMonHoc_LNR(treeMH t, FILE* f, int& count) {
     if (t == nullptr) return;
@@ -20,19 +64,15 @@ void GhiDanhSachMonHoc(treeMH t, const char* filename) {
     }
 
     int count = 0;
-    // Ghi tạm số lượng = 0
     fprintf(f, "%d\n", count);
 
-    // Ghi danh sách môn học
     GhiMonHoc_LNR(t, f, count);
 
-    // Ghi lại số lượng ở đầu file
     rewind(f);
     fprintf(f, "%d\n", count);
 
     fclose(f);
 }
-
 void ThemMonHocVaoCay(treeMH& t, const MonHoc& mh) {
     if (t == nullptr) {
         t = new nodeMH{mh, nullptr, nullptr};
@@ -45,27 +85,111 @@ void ThemMonHocVaoCay(treeMH& t, const MonHoc& mh) {
     // Trùng mã thì không thêm
 }
 
-void DocDanhSachMonHoc(treeMH& t, const char* filename) {
-    FILE* f = fopen(filename, "r");
-    if (!f) {
-        printf("Không thể mở file để đọc.\n");
-        return;
+int DocDanhSachMonHoc(treeMH &root, const QString& tenfile) {
+    QFile file(tenfile);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qDebug() << "Không mở được file:" << tenfile;
+        return 0;
     }
 
-    int n;
-    fscanf(f, "%d\n", &n);
+    QTextStream in(&file);
+    int soLuong;
+    in >> soLuong;
+    in.readLine();
 
-    for (int i = 0; i < n; ++i) {
+    qDebug() << "Đang đọc" << soLuong << "môn học từ file:" << tenfile;
+
+    for (int i = 0; i < soLuong; ++i) {
+        QString line = in.readLine();
+        if (line.trimmed().isEmpty()) continue;
+
+        QStringList parts = line.split("|");
+        if (parts.size() < 4) {
+            qDebug() << "Dòng không hợp lệ:" << line;
+            continue;
+        }
+
         MonHoc mh;
-        char line[256];
-        fgets(line, sizeof(line), f);
-        sscanf(line, "%[^|]|%[^|]|%d|%d", mh.MAMH, mh.TENMH, &mh.STCLT, &mh.STCTH);
+        strncpy(mh.MAMH, parts[0].toStdString().c_str(), 10); mh.MAMH[10] = '\0';
+        strncpy(mh.TENMH, parts[1].toStdString().c_str(), 50); mh.TENMH[50] = '\0';
+        mh.STCLT = parts[2].toInt();
+        mh.STCTH = parts[3].toInt();
 
-        ThemMonHocVaoCay(t, mh);
+        Insert_MonHoc(root, mh);
     }
 
-    fclose(f);
+    file.close();
+    return 1;
 }
+
+bool SuaMonHoc(treeMH root, const MonHoc& monHocMoi) {
+    treeMH node = SearchTree(root, monHocMoi.MAMH);
+    if (node == nullptr) return false;
+
+    strcpy(node->mh.TENMH, monHocMoi.TENMH);
+    node->mh.STCLT = monHocMoi.STCLT;
+    node->mh.STCTH = monHocMoi.STCTH;
+
+    return true;
+}
+void remove_case_3 (treeMH &r, treeMH &rp )
+{
+    if (r->left != NULL)
+        remove_case_3 (r->left, rp);
+    else
+    {
+        rp->mh = r->mh;
+        rp = r;
+        r = rp->right;
+    }
+}
+int RemoveTreeMH(treeMH &root,const char *mamh)
+{
+    if(root == NULL || SearchTree(root, mamh) == NULL) return 0;
+    else
+    {
+        if(strcmp(root->mh.MAMH, mamh) < 0) RemoveTreeMH(root->right, mamh);
+        else if(strcmp(root->mh.MAMH, mamh) > 0) RemoveTreeMH(root->left, mamh);
+        else
+        {
+            treeMH rp;
+            rp = root;
+            if(rp->left == NULL) root = root->right;
+            else if (rp->right==NULL) root=root->left;
+            else remove_case_3(rp->right, rp);
+            delete rp;
+        }
+    }
+    return 1;
+}
+void LuuMonHocVaoMang(treeMH root, nodeMH* ds[], int &n)
+{
+    if (root == nullptr) return;
+    LuuMonHocVaoMang(root->left, ds, n);
+    ds[n++] = root;
+    LuuMonHocVaoMang(root->right, ds, n);
+}
+
+void SapXepTangTheoTenMH(nodeMH* ds[], int n)
+{
+    for (int i = 0; i < n - 1; i++)
+        for (int j = i + 1; j < n; j++)
+            if (strcmp(ds[i]->mh.TENMH, ds[j]->mh.TENMH) > 0) {
+                nodeMH* temp = ds[i];
+                ds[i] = ds[j];
+                ds[j] = temp;
+            }
+}
+bool MonHocDaDuocDangKy(List_LTC &dsLTC, const char* mamh) {
+    for (int i = 0; i < dsLTC.n; ++i) {
+        if (strcmp(dsLTC.nodes[i]->MAMH, mamh) == 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
+
 
 void GhiDanhSachLopSV(const DS_LOPSV& dsLop, const char* filename) {
     FILE* f = fopen(filename, "w");
