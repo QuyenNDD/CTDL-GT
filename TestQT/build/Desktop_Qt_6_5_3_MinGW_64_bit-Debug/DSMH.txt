@@ -1,4 +1,5 @@
-3
+4
 CTDLGT|Cau truc du lieu va giai thuat|3|1
 CTDLGT 1|Cau truc du lieu va giai thuat 1|2|1
 LTNC|Lap trinh nang cao|2|2
+TRR|TOAN ROI RAC|2|2
