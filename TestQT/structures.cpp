@@ -152,7 +152,7 @@ void DocDanhSachLopSV(DS_LOPSV& dsLop, const char* filename) {
 
 
 void GhiDanhSachLopTinChi(const List_LTC& dsLTC, const char* filename) {
-    FILE* f = fopen(filename, "w");
+    FILE* f = fopen(filename, "wt");
     if (!f) {
         printf("Không thể mở file để ghi.\n");
         return;
@@ -161,6 +161,7 @@ void GhiDanhSachLopTinChi(const List_LTC& dsLTC, const char* filename) {
     fprintf(f, "%d\n", dsLTC.n);
     for (int i = 0; i < dsLTC.n; ++i) {
         LopTinChi* ltc = dsLTC.nodes[i];
+
         fprintf(f, "%d|%s|%s|%d|%d|%d|%d|%d\n",
                 ltc->MALOPTC, ltc->MAMH, ltc->NienKhoa,
                 ltc->Hocky, ltc->Nhom, ltc->sosvmin, ltc->sosvmax, ltc->huylop ? 1 : 0);
@@ -276,4 +277,20 @@ int HieuChinhLTC(List_LTC &ds, int maLtc, const LopTinChi& ltcMoi){
         }
     }
     return 0; // Không tìm thấy
+}
+
+SinhVien* TimSinhVienTheoMa(const DS_LOPSV &ds, const char* maSv, char* outMaLop){
+    for (int i = 0; i < ds.n; i++){
+        PTRSV p = ds.nodes[i].FirstSV;
+        while (p != NULL){
+            if (strcmp(p->sv.MASV, maSv) == 0){
+                if (outMaLop != NULL){
+                    strcpy(outMaLop, ds.nodes[i].MALOP);
+                    return &p->sv;
+                }
+            }
+            p = p->next;
+        }
+    }
+    return NULL;
 }

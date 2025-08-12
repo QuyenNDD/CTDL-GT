@@ -249,6 +249,19 @@
         <string>Hủy lớp</string>
        </property>
       </widget>
+      <widget class="QPushButton" name="btnInDSSV">
+       <property name="geometry">
+        <rect>
+         <x>580</x>
+         <y>130</y>
+         <width>161</width>
+         <height>24</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Danh sách sinh viên đăng kí</string>
+       </property>
+      </widget>
      </widget>
      <widget class="QWidget" name="widget_2" native="true">
       <property name="geometry">

@@ -4,6 +4,8 @@
 #include <QMessageBox>
 #include <cstdio> // cho FILE*
 #include <QDir>
+#include <QVBoxLayout>
+
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -11,11 +13,56 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     docDuLieuTuFile();
+    QRegularExpression rx("[A-Za-z]+");
+    QValidator *validator = new QRegularExpressionValidator(rx, this);
+    ui->lineMMH->setValidator(validator);
+
+    // Tự chuyển thành chữ in hoa
+    connect(ui->lineMMH, &QLineEdit::textChanged, this, [=](const QString &text){
+        ui->lineMMH->setText(text.toUpper());
+    });
+
+    connect(ui->lineNK, &QLineEdit::textChanged, this, [=](QString text){
+        // Chỉ cho số và tối đa 8 chữ số
+        text.remove(QRegularExpression("[^0-9]"));
+        if (text.length() > 8) {
+            text = text.left(8);
+        }
+
+        // Chèn dấu '-'
+        if (text.length() > 4) {
+            text.insert(4, '-');
+        }
+
+        // Tránh lặp vô hạn
+        if (text != ui->lineNK->text()) {
+            ui->lineNK->setText(text);
+        }
+    });
+
+    setButtonState(false);
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::setButtonState(bool state){
+    ui->btnSua->setEnabled(state);
+    ui->btnXoa->setEnabled(state);
+    ui->btnInDSSV->setEnabled(state);
+    ui->ckHuy->setEnabled(state);
+}
+
+void MainWindow::clearForm(){
+    ui->lineMMH->clear();
+    ui->lineNK->clear();
+    ui->spHK->setValue(0);
+    ui->spMAXSV->setValue(0);
+    ui->spMINSV->setValue(0);
+    ui->spNHOM->setValue(0);
+    ui->ckHuy->setChecked(false);
 }
 
 void MainWindow::docDuLieuTuFile() {
@@ -25,13 +72,13 @@ void MainWindow::docDuLieuTuFile() {
     hienThiDSLTC(dsLTC);
 }
 
-void MainWindow::ghiDuLieuTuFile() {
-    GhiDanhSachMonHoc(dsMH, "DSMH.txt");
-    GhiDanhSachLopSV(dsLop, "DS_LSV_SV.txt");
-    GhiDanhSachLopTinChi(dsLTC, "DS_LTC_DK.txt");
+// void MainWindow::ghiDuLieuTuFile() {
+//     GhiDanhSachMonHoc(dsMH, "DSMH.txt");
+//     GhiDanhSachLopSV(dsLop, "DS_LSV_SV.txt");
+//     GhiDanhSachLopTinChi(dsLTC, "DS_LTC_DK.txt");
 
-    QMessageBox::information(this, "Thông báo", "Ghi dữ liệu ra file thành công!");
-}
+//     QMessageBox::information(this, "Thông báo", "Ghi dữ liệu ra file thành công!");
+// }
 
 int MainWindow::demSoLuongSvDK(PTRDK head){
     int count = 0;
@@ -85,6 +132,19 @@ void MainWindow::on_btnThem_clicked()
         QMessageBox::warning(this, "Lỗi", "Mã môn học và niên khóa không được chứa khoảng trắng.");
         return;
     }
+    //Kiểm tra niên khóa
+    if (nienKhoa.length() != 9){
+        QMessageBox::warning(this, "Lỗi", "Nhập sai niên khóa. Nhập theo dạng yyyy-yyyy");
+        return;
+    }else {
+        int nam1 = nienKhoa.left(4).toInt();
+        int nam2 = nienKhoa.mid(5, 4).toInt();
+        if (nam1 >= nam2){
+            QMessageBox::warning(this, "Lỗi", "Niên khóa không hợp lệ. Năm sau phải lớn hơn năm trước");
+            return;
+        }
+    }
+
     //Kiểm tra học kì > 0
     if (hocKy <= 0){
         QMessageBox::warning(this, "Lỗi", "Học kỳ phải khác 0.");
@@ -131,8 +191,9 @@ void MainWindow::on_btnThem_clicked()
 
     dsLTC.nodes[dsLTC.n++] = ltc;
     QMessageBox::information(this, "Thành công", "Đã thêm lớp tín chỉ mới.");
-
+    clearForm();
     hienThiDSLTC(dsLTC);
+    setButtonState(false);
 }
 
 void MainWindow::on_btnXoa_clicked()
@@ -165,6 +226,8 @@ void MainWindow::on_btnXoa_clicked()
         QMessageBox::information(this, "Thông báo", "Đã xóa thành công.");
         hienThiDSLTC(dsLTC);
     }
+    clearForm();
+    setButtonState(false);
 }
 
 
@@ -238,6 +301,8 @@ void MainWindow::on_btnSua_clicked()
     }else {
         QMessageBox::warning(this, "Thông báo", "Không tìm thấy lớp tín chỉ.");
     }
+    clearForm();
+    setButtonState(false);
 }
 
 
@@ -264,5 +329,65 @@ void MainWindow::on_tblDSLTC_cellClicked(int row, int column)
     }else {
         ui->ckHuy->setChecked(false);
     }
+    setButtonState(true);
+}
+
+
+void MainWindow::on_btnInDSSV_clicked()
+{
+    QString maMH = ui->lineMMH->text().trimmed();
+    QString nienKhoa = ui->lineNK->text().trimmed();
+    int hocKy = ui->spHK->value();
+    int nhom = ui->spNHOM->value();
+
+    LopTinChi* ltc = NULL;
+    for (int i = 0; i < dsLTC.n; i++){
+        LopTinChi *lt = dsLTC.nodes[i];
+        if (strcmp(lt->MAMH, maMH.toStdString().c_str()) == 0 &&
+            strcmp(lt->NienKhoa, nienKhoa.toStdString().c_str()) == 0 &&
+            lt->Hocky == hocKy &&
+            lt->Nhom == nhom) {
+            ltc = lt;
+            break;
+        }
+    }
+    if (!ltc) {
+        QMessageBox::warning(this, "Lỗi", "Không tìm thấy lớp tín chỉ.");
+        return;
+    }
+
+    QWidget* tab = new QWidget;
+    QVBoxLayout* layout = new QVBoxLayout(tab);
+    QTableWidget* table = new QTableWidget;
+    table->setColumnCount(3);
+    table->setHorizontalHeaderLabels(QStringList() << "MASV" << "HỌ TÊN" << "LỚP");
+    layout->addWidget(table);
+    tab->setLayout(layout);
+
+    PTRDK pdk = ltc->dssvdk;
+    while (pdk != nullptr) {
+        char maLop[16] = "";
+        SinhVien* sv = TimSinhVienTheoMa(dsLop, pdk->dk.MASV, maLop);
+        if (sv != nullptr) {
+            int row = table->rowCount();
+            table->insertRow(row);
+            table->setItem(row, 0, new QTableWidgetItem(QString(sv->MASV)));
+            QString hoTen = QString("%1 %2").arg(sv->HO).arg(sv->TEN);
+            table->setItem(row, 1, new QTableWidgetItem(hoTen));
+            table->setItem(row, 2, new QTableWidgetItem(QString(maLop)));
+        }
+        pdk = pdk->next;
+    }
+
+    // Giả sử bạn có tabWidget trong UI, nếu không có thì tạo thêm trong Qt Designer
+    ui->tabWidget->addTab(tab, QString("DS DK %1-%2").arg(maMH).arg(nhom));
+    ui->tabWidget->setCurrentWidget(tab);
+}
+
+
+void MainWindow::on_btnGhiFile_clicked()
+{
+    GhiDanhSachLopTinChi(dsLTC, "DS_LTC_DK.txt");
+    QMessageBox::information(this, "Thông báo", "Đã ghi vào file DS_LTC_DK.txt thành công!");
 }
 

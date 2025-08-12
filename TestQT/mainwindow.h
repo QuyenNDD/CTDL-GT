@@ -21,6 +21,8 @@ public:
     void ghiDuLieuTuFile();
     int demSoLuongSvDK(PTRDK head);
     void hienThiDSLTC(List_LTC &ds);
+    void setButtonState(bool state);
+    void clearForm();
 private slots:
 
     void on_btnThem_clicked();
@@ -30,6 +32,10 @@ private slots:
     void on_btnSua_clicked();
 
     void on_tblDSLTC_cellClicked(int row, int column);
+
+    void on_btnInDSSV_clicked();
+
+    void on_btnGhiFile_clicked();
 
 private:
     Ui::MainWindow *ui;
