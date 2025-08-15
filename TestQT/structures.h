@@ -83,8 +83,14 @@ bool MonHocDaDuocDangKy(List_LTC &dsLTC, const char* mamh);
 
 void GhiDanhSachLopSV(const DS_LOPSV& dsLop, const char* filename);
 void DocDanhSachLopSV(DS_LOPSV& dsLop, const char* filename);
+LopSV* TimLop(DS_LOPSV& dsLop, const char* MALOP);
 
 void GhiDanhSachLopTinChi(const List_LTC& dsLTC, const char* filename);
 void DocDanhSachLopTinChi(List_LTC& dsLTC, const char* filename);
+bool TimMaMonHoc(treeMH root, const char* maMH);
+int XoaLTC(List_LTC &ds, int maLtc);
+int HieuChinhLTC(List_LTC &ds, int maLtc, const LopTinChi& ltcMoi);
+LopTinChi* TimLopTinChi(const List_LTC& dsLTC, const char* mamh, const char* nienkhoa, int hocky, int nhom);
+SinhVien* TimSinhVien(const DS_LOPSV& dsLop, const char* masv);
 
 #endif // STRUCTURES_H
