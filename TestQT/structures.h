@@ -7,6 +7,7 @@
 
 const int MAX_LTC = 10000;
 const int MAX_LOPSV = 500;
+const int MAX_MON = 100;
 
 struct MonHoc {
     char MAMH[11];

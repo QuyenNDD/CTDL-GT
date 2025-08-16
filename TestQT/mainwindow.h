@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <structures.h>
 
+
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWindow;
@@ -43,6 +44,8 @@ private slots:
     void on_btnSuaMH_clicked();
     void on_btnInDSMH_clicked();
 
+    void on_btnTinhDiemTB_clicked();
+    void on_btnInBangDiem_clicked();
 
 private:
     Ui::MainWindow *ui;

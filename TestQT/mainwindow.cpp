@@ -5,7 +5,41 @@
 #include <cstdio> // cho FILE*
 #include <QDir>
 #include <QVBoxLayout>
+#include <QInputDialog>
+#include <QLabel>
+#include <QHeaderView>
+#include <QTableWidget>
 
+// Tìm lớp theo mã trong DS_LOPSV (không cần khai báo trong header)
+static LopSV* TimLopTheoMaLocal(DS_LOPSV &ds, const char* maLop) {
+    for (int i = 0; i < ds.n; ++i) {
+        if (strcmp(ds.nodes[i].MALOP, maLop) == 0) return &ds.nodes[i];
+    }
+    return nullptr;
+}
+
+// Kiểm tra MASV có thuộc MALOP chỉ định hay không (dùng hàm có sẵn TimSinhVienTheoMa)
+static bool SinhVienThuocLop(const DS_LOPSV &dsLop, const char* maSV, const char* maLopTarget) {
+    char maLopFound[16] = "";
+    SinhVien* sv = TimSinhVienTheoMa(dsLop, maSV, maLopFound);
+    if (!sv) return false;
+    return strcmp(maLopFound, maLopTarget) == 0;
+}
+
+// Tìm chỉ số của mã môn trong mảng dsMaMH (trả về -1 nếu không có)
+static int TimChiSoMaMon(const char dsMaMH[][11], int used, const char* ma) {
+    for (int i = 0; i < used; ++i) {
+        if (strcmp(dsMaMH[i], ma) == 0) return i;
+    }
+    return -1;
+}
+
+void MainWindow::on_btnInBangDiem_clicked()
+{
+    // TODO: Viết code in bảng điểm ở đây
+    // Ví dụ test đơn giản:
+    QMessageBox::information(this, "In bảng điểm", "Chức năng in bảng điểm đang được phát triển.");
+}
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -444,4 +478,102 @@ void MainWindow::on_btnInDSMH_clicked() {
     QTextStream out(&text);
     LNR_InDanhSach(dsMH, out);
     ui->txtKetQuaMonHoc->setText(text);
+}
+
+void MainWindow::on_btnTinhDiemTB_clicked()
+{
+    // Hỏi mã lớp
+    bool ok = false;
+    QString maLopQ = QInputDialog::getText(this, "Nhập lớp", "Mã lớp:", QLineEdit::Normal, "", &ok).trimmed();
+    if (!ok || maLopQ.isEmpty()) return;
+    QByteArray baLop = maLopQ.toUtf8();
+    const char* maLop = baLop.constData();
+
+    // Tìm lớp
+    LopSV* lop = TimLopTheoMaLocal(dsLop, maLop);
+    if (!lop) {
+        QMessageBox::warning(this, "Lỗi", "Không tìm thấy lớp.");
+        return;
+    }
+    if (lop->FirstSV == nullptr) {
+        QMessageBox::information(this, "Thông báo", "Lớp chưa có sinh viên.");
+        return;
+    }
+
+    // Tạo tab + layout + tiêu đề
+    QWidget* tab = new QWidget;
+    QVBoxLayout* layout = new QVBoxLayout(tab);
+
+    QLabel* title = new QLabel(QString::fromUtf8("BẢNG THỐNG KÊ ĐIỂM TRUNG BÌNH KHÓA HỌC\n\tLớp  : %1").arg(maLopQ));
+    title->setAlignment(Qt::AlignCenter);
+    title->setStyleSheet("font-weight:600; font-size:16px; margin:8px 0;");
+
+    QTableWidget* table = new QTableWidget;
+    table->setColumnCount(5);
+    table->setHorizontalHeaderLabels(QStringList() << "STT" << "MASV" << "HỌ" << "TÊN" << "Điểm TB");
+    table->horizontalHeader()->setStretchLastSection(true);
+    table->verticalHeader()->setVisible(false);
+    table->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    table->setSelectionBehavior(QAbstractItemView::SelectRows);
+
+    layout->addWidget(title);
+    layout->addWidget(table);
+    tab->setLayout(layout);
+
+    // Duyệt từng SV trong lớp
+    PTRSV p = lop->FirstSV;
+    int stt = 1;
+    while (p != nullptr) {
+        // Gom các môn và điểm cao nhất của SV này
+        char dsMaMH[MAX_MON][11];
+        float diemMax[MAX_MON];
+        int used = 0;
+
+        for (int i = 0; i < dsLTC.n; ++i) {
+            LopTinChi* ltc = dsLTC.nodes[i];
+            if (!ltc) continue;
+
+            for (PTRDK d = ltc->dssvdk; d != nullptr; d = d->next) {
+                if (strcmp(d->dk.MASV, p->sv.MASV) == 0) {
+                    int idx = TimChiSoMaMon(dsMaMH, used, ltc->MAMH);
+                    if (idx == -1) {
+                        if (used < MAX_MON) {
+                            strcpy(dsMaMH[used], ltc->MAMH);
+                            diemMax[used] = d->dk.DIEM;
+                            ++used;
+                        }
+                    } else {
+                        if (d->dk.DIEM > diemMax[idx]) diemMax[idx] = d->dk.DIEM;
+                    }
+                }
+            }
+        }
+
+        // Tính ĐTB theo tín chỉ (STCLT + STCTH)
+        double tongTich = 0.0;
+        int tongTC = 0;
+        for (int k = 0; k < used; ++k) {
+            nodeMH* pmh = TimMonHoc(dsMH, dsMaMH[k]);
+            if (!pmh) continue; // không tìm thấy môn -> bỏ qua
+            int tinchi = pmh->mh.STCLT + pmh->mh.STCTH;
+            if (tinchi <= 0) continue;
+            tongTich += (double)diemMax[k] * tinchi;
+            tongTC += tinchi;
+        }
+        double dtb = (tongTC > 0) ? (tongTich / tongTC) : 0.0;
+
+        // Ghi 1 dòng vào bảng
+        int row = table->rowCount();
+        table->insertRow(row);
+        table->setItem(row, 0, new QTableWidgetItem(QString::number(stt++)));
+        table->setItem(row, 1, new QTableWidgetItem(QString(p->sv.MASV)));
+        table->setItem(row, 2, new QTableWidgetItem(QString(p->sv.HO)));
+        table->setItem(row, 3, new QTableWidgetItem(QString(p->sv.TEN)));
+        table->setItem(row, 4, new QTableWidgetItem(QString::number(dtb, 'f', 2)));
+
+        p = p->next;
+    }
+
+    ui->tabWidget->addTab(tab, QString("TB Khóa %1").arg(maLopQ));
+    ui->tabWidget->setCurrentWidget(tab);
 }

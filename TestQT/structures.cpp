@@ -386,3 +386,74 @@ SinhVien* TimSinhVienTheoMa(const DS_LOPSV &ds, const char* maSv, char* outMaLop
     }
     return NULL;
 }
+
+// structures.cpp (thêm vào cuối file)
+
+int LayTongTinChi(treeMH root, const char* maMH) {
+    nodeMH* mon = TimMonHoc(root, maMH);
+    if (mon) {
+        return mon->mh.STCLT + mon->mh.STCTH;
+    }
+    return 0; // Không tìm thấy môn
+}
+
+float LayDiemCaoNhatSVChoMon(const List_LTC& dsLTC, const char* maSV, const char* maMH) {
+    float diemMax = -1; // Giả sử điểm <0 không hợp lệ
+    for (int i = 0; i < dsLTC.n; ++i) {
+        LopTinChi* ltc = dsLTC.nodes[i];
+        if (strcmp(ltc->MAMH, maMH) == 0 && !ltc->huylop) { // Môn khớp và không hủy
+            PTRDK p = ltc->dssvdk;
+            while (p) {
+                if (strcmp(p->dk.MASV, maSV) == 0) {
+                    if (p->dk.DIEM > diemMax) diemMax = p->dk.DIEM;
+                }
+                p = p->next;
+            }
+        }
+    }
+    return diemMax; // Trả -1 nếu chưa học
+}
+
+int LayDanhSachMonHocCuaLop(DS_LOPSV& dsLop, const List_LTC& dsLTC, const char* maLop, char dsMonHoc[MAX_MON][11]) {
+    int soMon = 0;
+    // Tìm lớp
+    LopSV* lop = nullptr;
+    for (int i = 0; i < dsLop.n; ++i) {
+        if (strcmp(dsLop.nodes[i].MALOP, maLop) == 0) {
+            lop = &dsLop.nodes[i];
+            break;
+        }
+    }
+    if (!lop) return 0;
+
+    // Duyệt sinh viên trong lớp
+    PTRSV sv = lop->FirstSV;
+    while (sv) {
+        // Duyệt tất cả lớp tín chỉ
+        for (int j = 0; j < dsLTC.n; ++j) {
+            LopTinChi* ltc = dsLTC.nodes[j];
+            if (!ltc->huylop) {
+                PTRDK dk = ltc->dssvdk;
+                while (dk) {
+                    if (strcmp(dk->dk.MASV, sv->sv.MASV) == 0) {
+                        // Kiểm tra unique
+                        bool tonTai = false;
+                        for (int k = 0; k < soMon; ++k) {
+                            if (strcmp(dsMonHoc[k], ltc->MAMH) == 0) {
+                                tonTai = true;
+                                break;
+                            }
+                        }
+                        if (!tonTai && soMon < MAX_MON) {
+                            strcpy(dsMonHoc[soMon], ltc->MAMH);
+                            soMon++;
+                        }
+                    }
+                    dk = dk->next;
+                }
+            }
+        }
+        sv = sv->next;
+    }
+    return soMon; // Trả về số lượng môn
+}
