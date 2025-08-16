@@ -13,12 +13,31 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     ui->tblMH->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     ui->tblND->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    connect(ui->lineMaMH, &QLineEdit::textChanged,
+            this, &MainWindow::on_lineMaMH_textChanged);
     connect(ui->tblMH, &QTableWidget::itemSelectionChanged, this, [=]() {
         bool coDongDuocChon = !ui->tblMH->selectedItems().isEmpty();
         ui->btnSuaMH->setEnabled(coDongDuocChon);
         ui->btnXoaMH->setEnabled(coDongDuocChon);
     });
     docDuLieuTuFile();
+    connect(ui->lineNDNK, &QLineEdit::textChanged, this, [=](QString text){
+        // Chỉ cho số và tối đa 8 chữ số
+        text.remove(QRegularExpression("[^0-9]"));
+        if (text.length() > 8) {
+            text = text.left(8);
+        }
+
+        // Chèn dấu '-'
+        if (text.length() > 4) {
+            text.insert(4, '-');
+        }
+
+        // Tránh lặp vô hạn
+        if (text != ui->lineNDNK->text()) {
+            ui->lineNDNK->setText(text);
+        }
+    });
 }
 
 MainWindow::~MainWindow()
@@ -41,15 +60,24 @@ void MainWindow::ghiDuLieuTuFile() {
 
     QMessageBox::information(this, "Thông báo", "Ghi dữ liệu ra file thành công!");
 }
-void MainWindow::on_lineMaMH_textChanged(const QString &arg1)
+void MainWindow::on_lineMaMH_textChanged(const QString &text)
 {
-    QString cleanedText = arg1;
-    cleanedText.remove(' ');
-    QString upperText = cleanedText.toUpper();
-    if (arg1 != upperText) {
-        int cursorPos = ui->lineMaMH->cursorPosition();
-        ui->lineMaMH->setText(upperText);
-        ui->lineMaMH->setCursorPosition(cursorPos);
+    std::string input = text.toStdString();
+    std::string result;
+    result.reserve(10);
+
+    for (char c : input) {
+        if (c == ' ') continue;
+        if (!isalnum((unsigned char)c)) continue;
+        c = std::toupper((unsigned char)c);
+        if (result.size() < 10) result.push_back(c);
+    }
+
+    QString filtered = QString::fromStdString(result);
+
+    // tránh vòng lặp vô hạn: chỉ setText nếu khác
+    if (ui->lineMaMH->text() != filtered) {
+        ui->lineMaMH->setText(filtered);
     }
 }
 void MainWindow::on_lineTenMH_textChanged(const QString &arg1)
@@ -60,14 +88,26 @@ void MainWindow::on_lineTenMH_textChanged(const QString &arg1)
         ui->lineTenMH->setText(upperText);
         ui->lineTenMH->setCursorPosition(cursorPos);
     }
+
 }
-void MainWindow::on_lineNDMH_textChanged(const QString &arg1)
+void MainWindow::on_lineNDMH_textChanged(const QString &text)
 {
-    QString upperText = arg1.toUpper();
-    if (arg1 != upperText) {
-        int cursorPos = ui->lineNDMH->cursorPosition();
-        ui->lineNDMH->setText(upperText);
-        ui->lineNDMH->setCursorPosition(cursorPos);
+    std::string input = text.toStdString();
+    std::string result;
+    result.reserve(10);
+
+    for (char c : input) {
+        if (c == ' ') continue;
+        if (!isalnum((unsigned char)c)) continue;
+        c = std::toupper((unsigned char)c);
+        if (result.size() < 10) result.push_back(c);
+    }
+
+    QString filtered = QString::fromStdString(result);
+
+    // tránh vòng lặp vô hạn: chỉ setText nếu khác
+    if (ui->lineNDMH->text() != filtered) {
+        ui->lineNDMH->setText(filtered);
     }
 }
 int MainWindow::demSoLuongSvDK(PTRDK head){
@@ -143,8 +183,20 @@ void MainWindow::on_btnThemMH_clicked()
     int stclt = ui->spinBox_STCLT->value();
     int stcth = ui->spinBox_STCTH->value();
 
-    if (ma.isEmpty() || ten.isEmpty()) {
-        QMessageBox::warning(this, "Thiếu dữ liệu", "Vui lòng nhập đầy đủ Mã và Tên môn học!");
+    if (ma.isEmpty()) {
+        QMessageBox::warning(this, "Thiếu dữ liệu", "Vui lòng nhập Mã môn học!");
+        return;
+    }
+    if (ten.isEmpty()) {
+        QMessageBox::warning(this, "Thiếu dữ liệu", "Vui lòng nhập Tên môn học!");
+        return;
+    }
+    if (stclt <= 0) {
+        QMessageBox::warning(this, "Sai dữ liệu", "Số tín chỉ lý thuyết không hợp lệ(<=0)!");
+        return;
+    }
+    if (stcth <= 0) {
+        QMessageBox::warning(this, "Sai dữ liệu", "Số tín chỉ thực hành không hợp lệ(<=0)!");
         return;
     }
 
@@ -479,7 +531,22 @@ void MainWindow::on_btnNDSearch_clicked()
     QString nienkhoa = ui->lineNDNK->text().trimmed();
     int hocky = ui->spinBoxNDHK->value();
     int nhom = ui->spinBoxNDNhom->value();
-
+    if (mamh.isEmpty()) {
+        QMessageBox::warning(this, "Thiếu dữ liệu", "Mã môn học không được trống!");
+        return;
+    }
+    if (nienkhoa.isEmpty()) {
+        QMessageBox::warning(this, "Thiếu dữ liệu", "Niên khóa không được trống!");
+        return;
+    }
+    if (hocky <= 0) {
+        QMessageBox::warning(this, "Sai dữ liệu", "Học kỳ không hợp lệ(<=0)!");
+        return;
+    }
+    if (nhom <= 0) {
+        QMessageBox::warning(this, "Sai dữ liệu", "Nhóm không hợp lệ(<=0)!");
+        return;
+    }
     LopTinChi* ltc = TimLopTinChi(dsLTC, mamh.toStdString().c_str(), nienkhoa.toStdString().c_str(), hocky, nhom);
 
     if (ltc == nullptr) {

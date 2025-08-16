@@ -129,19 +129,19 @@ public:
         lineTenMH->setGeometry(QRect(90, 60, 113, 26));
         btnThemMH = new QPushButton(widget_3);
         btnThemMH->setObjectName("btnThemMH");
-        btnThemMH->setGeometry(QRect(530, 20, 93, 29));
+        btnThemMH->setGeometry(QRect(460, 20, 93, 29));
         btnThemMH->setStyleSheet(QString::fromUtf8("background-color: rgb(255, 170, 0);\n"
 "alternate-background-color: rgb(255, 170, 127);\n"
 "selection-background-color: rgb(255, 0, 0);"));
         btnSuaMH = new QPushButton(widget_3);
         btnSuaMH->setObjectName("btnSuaMH");
         btnSuaMH->setEnabled(true);
-        btnSuaMH->setGeometry(QRect(530, 60, 93, 29));
+        btnSuaMH->setGeometry(QRect(460, 70, 93, 29));
         btnSuaMH->setStyleSheet(QString::fromUtf8("background-color: rgb(255, 170, 0);"));
         btnXoaMH = new QPushButton(widget_3);
         btnXoaMH->setObjectName("btnXoaMH");
         btnXoaMH->setEnabled(true);
-        btnXoaMH->setGeometry(QRect(660, 60, 93, 29));
+        btnXoaMH->setGeometry(QRect(460, 120, 93, 29));
         btnXoaMH->setStyleSheet(QString::fromUtf8("background-color: rgb(255, 170, 0);"));
         spinBox_STCLT = new QSpinBox(widget_3);
         spinBox_STCLT->setObjectName("spinBox_STCLT");
@@ -151,7 +151,7 @@ public:
         spinBox_STCTH->setGeometry(QRect(320, 70, 91, 26));
         pushButton = new QPushButton(widget_3);
         pushButton->setObjectName("pushButton");
-        pushButton->setGeometry(QRect(530, 110, 221, 29));
+        pushButton->setGeometry(QRect(560, 120, 221, 29));
         pushButton->setStyleSheet(QString::fromUtf8("background-color: rgb(85, 255, 255);\n"
 "border: 2px solid ;"));
         widget_4 = new QWidget(tabQLMH);
@@ -392,7 +392,7 @@ public:
 
         retranslateUi(MainWindow);
 
-        tabWidget->setCurrentIndex(2);
+        tabWidget->setCurrentIndex(4);
 
 
         QMetaObject::connectSlotsByName(MainWindow);

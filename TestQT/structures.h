@@ -68,6 +68,7 @@ struct List_LTC {
 
 extern treeMH dsMH;
 
+bool hasSpace(const QString &str);
 int DemSoLuongMonHoc(treeMH root);
 treeMH SearchTree(treeMH root,const char* mamh);
 void Insert_MonHoc(treeMH &root, MonHoc mh);

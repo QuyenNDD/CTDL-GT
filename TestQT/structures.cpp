@@ -7,6 +7,13 @@
 #include <QDebug>
 //Mon hoc
 
+bool hasSpace(const QString &str) {
+    QByteArray bytes = str.toUtf8();
+    for (char c : bytes) {
+        if ((int)c == 32) return true;
+    }
+    return false;
+}
 treeMH SearchTree(treeMH root,const char* mamh) {
     while (root != nullptr) {
         int cmp = strcmp(mamh, root->mh.MAMH);
