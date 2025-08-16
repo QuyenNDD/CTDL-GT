@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>7</number>
+     <number>5</number>
     </property>
     <widget class="QWidget" name="tabQLMH">
      <attribute name="title">
@@ -297,14 +297,14 @@ border: 2px solid ;</string>
       <string>Quản lý sinh viên</string>
      </attribute>
     </widget>
-    <widget class="QWidget" name="tabQLLSV">
-     <attribute name="title">
-      <string>Quản lý lớp sinh viên</string>
-     </attribute>
-    </widget>
     <widget class="QWidget" name="tabTongKet">
      <attribute name="title">
       <string>Tổng kết </string>
+     </attribute>
+    </widget>
+    <widget class="QWidget" name="tabQLLSV">
+     <attribute name="title">
+      <string>Quản lý lớp sinh viên</string>
      </attribute>
     </widget>
     <widget class="QWidget" name="tabND">

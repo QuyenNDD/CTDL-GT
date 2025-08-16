@@ -53,6 +53,8 @@ private slots:
 
     void on_tblMH_cellClicked(int row, int column);
 
+    void on_btnGhiFile_clicked();
+
 private:
     Ui::MainWindow *ui;
     DS_LOPSV dsLop;
