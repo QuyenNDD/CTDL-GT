@@ -244,6 +244,16 @@ bool TimMaMonHoc(treeMH root, const char* maMH){
     return false;
 }
 
+MonHoc* TimMonHocTheoMa(treeMH root, const char* maMH){
+    while (root != NULL) {
+        int cmp = strcmp(maMH, root->mh.MAMH);
+        if (cmp == 0) return &root->mh;
+        else if (cmp < 0) root = root->left;
+        else root = root->right;
+    }
+    return NULL;
+}
+
 int XoaLTC(List_LTC &ds, int maLtc){
     for (int i = 0; i < ds.n; i++){
         LopTinChi* ltc = ds.nodes[i];
@@ -293,4 +303,48 @@ SinhVien* TimSinhVienTheoMa(const DS_LOPSV &ds, const char* maSv, char* outMaLop
         }
     }
     return NULL;
+}
+
+LopTinChi* TimLTCTheo4DK(List_LTC &ds, const char* nienkhoa, int hocky, const char* maMh, int nhom){
+    for (int i = 0; i < ds.n; i++){
+        LopTinChi* ltc = ds.nodes[i];
+        if (strcmp(ltc->NienKhoa, nienkhoa) == 0 &&
+            ltc->Hocky == hocky &&
+            strcmp(ltc->MAMH, maMh) == 0 &&
+            ltc->Nhom == nhom){
+            return ltc;
+        }
+    }
+    return NULL;
+}
+
+int ThemSVVaoLTC(LopTinChi* ltc, const char* maSv){
+    if (!ltc) return 0; //Không có lớp tín chỉ
+
+    //Kiểm tra sinh viên đã đăng kí chưa
+    PTRDK p = ltc->dssvdk;
+    int count = 0;
+    while(p){
+        if (strcmp(p->dk.MASV, maSv) == 0) return 1; // Sinh viên đã đăng kí
+        count++;
+        p = p->next;
+    }
+
+    if (count >= ltc->sosvmax) return 2; // Đã đầy sinh viên
+
+    PTRDK newNode = new nodeDK;
+    strcpy(newNode->dk.MASV, maSv);
+    newNode->dk.DIEM = 0;
+    newNode->next = NULL;
+
+    if (!ltc->dssvdk) {
+        ltc->dssvdk = newNode;
+    }else {
+        p = ltc->dssvdk;
+        while(p->next){
+            p = p->next;
+        }
+        p->next = newNode;
+    }
+    return 3; // Thêm thành công
 }
