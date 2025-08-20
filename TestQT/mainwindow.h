@@ -24,6 +24,7 @@ public:
     void setButtonState(bool state);
     void clearForm();
     void hienThiDK_DSLTC(List_LTC &ds, int hk, const QString nienkhoa);
+    void hienThiQLDK_LTC(List_LTC &ds, int hk, const QString nienkhoa);
 private slots:
 
     void on_btnThem_clicked();
@@ -45,6 +46,10 @@ private slots:
     void on_tblDK_DSLTC_cellClicked(int row, int column);
 
     void on_btnDK_clicked();
+
+    void on_lineQLDK_NK_returnPressed();
+
+    void on_btnQLDK_Huy_clicked();
 
 private:
     Ui::MainWindow *ui;

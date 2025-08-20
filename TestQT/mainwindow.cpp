@@ -61,9 +61,27 @@ MainWindow::MainWindow(QWidget *parent)
             ui->lineDK_NK->setText(text);
         }
     });
+    connect(ui->lineQLDK_NK, &QLineEdit::textChanged, this, [=](QString text){
+        // Chỉ cho số và tối đa 8 chữ số
+        text.remove(QRegularExpression("[^0-9]"));
+        if (text.length() > 8) {
+            text = text.left(8);
+        }
+
+        // Chèn dấu '-'
+        if (text.length() > 4) {
+            text.insert(4, '-');
+        }
+
+        // Tránh lặp vô hạn
+        if (text != ui->lineQLDK_NK->text()) {
+            ui->lineQLDK_NK->setText(text);
+        }
+    });
     setButtonState(false);
     connect(ui->lineMSV, &QLineEdit::returnPressed, this, &MainWindow::on_lineMSV_returnPressed);
     ui->btnDK->setEnabled(false);
+    ui->btnQLDK_Huy->setEnabled(false);
 }
 
 MainWindow::~MainWindow()
@@ -411,6 +429,7 @@ void MainWindow::on_btnInDSSV_clicked()
 void MainWindow::on_btnGhiFile_clicked()
 {
     GhiDanhSachLopTinChi(dsLTC, "DS_LTC_DK.txt");
+    DocDanhSachLopTinChi(dsLTC, "DS_LTC_DK.txt");
     QMessageBox::information(this, "Thông báo", "Đã ghi vào file DS_LTC_DK.txt thành công!");
 }
 
@@ -562,11 +581,102 @@ void MainWindow::on_btnDK_clicked()
     } else {
         QMessageBox::information(this, "Thành công", "Đăng kí thành công.");
         GhiDanhSachLopTinChi(dsLTC, "DS_LTC_DK.txt");
+        DocDanhSachLopTinChi(dsLTC, "DS_LTC_DK.txt");
         int hk = ui->spDK_HK->value();
         QString nienkhoa = ui->lineDK_NK->text().trimmed();
         hienThiDK_DSLTC(dsLTC, hk, nienkhoa);
+        hienThiDSLTC(dsLTC);
+        return;
+    }
+}
+
+
+void MainWindow::on_lineQLDK_NK_returnPressed()
+{
+    QString nienkhoa = ui->lineQLDK_NK->text().trimmed();
+    int hk = ui->spQLDK_HK->value();
+
+    if (nienkhoa.contains(' ')){
+        QMessageBox::warning(this, "Lỗi", "Niên khóa không được chứa khoảng trắng.");
         return;
     }
 
+    if (nienkhoa.length() != 9){
+        QMessageBox::warning(this, "Lỗi", "Nhập sai niên khóa. Nhập theo dạng yyyy-yyyy");
+        return;
+    }else {
+        int nam1 = nienkhoa.left(4).toInt();
+        int nam2 = nienkhoa.mid(5, 4).toInt();
+        if (nam1 >= nam2){
+            QMessageBox::warning(this, "Lỗi", "Niên khóa không hợp lệ. Năm sau phải lớn hơn năm trước");
+            return;
+        }
+    }
+    if (hk <= 0) {
+        QMessageBox::warning(this, "Lỗi", "Học kỳ phải lớn hơn 0.");
+        return;
+    }
+
+    hienThiQLDK_LTC(dsLTC, hk, nienkhoa);
+    ui->btnQLDK_Huy->setEnabled(true);
+}
+
+void MainWindow::hienThiQLDK_LTC(List_LTC &ds, int hk, const QString nienkhoa){
+    ui->tblQLDK_LTC->setRowCount(0);
+    bool check = false;
+    int svdk = 0;
+    int controng = 0;
+    for (int i = 0; i < ds.n; i++){
+        LopTinChi* ltc = ds.nodes[i];
+
+        if (ltc->Hocky == hk && strcmp(ltc->NienKhoa, nienkhoa.toStdString().c_str()) == 0 && !ltc->huylop){
+            svdk = demSoLuongSvDK(ltc->dssvdk);
+            if (svdk < ltc->sosvmin){
+                controng = ltc->sosvmax - svdk;
+                check = true;
+
+                int row = ui->tblQLDK_LTC->rowCount();
+                ui->tblQLDK_LTC->insertRow(row);
+
+                ui->tblQLDK_LTC->setItem(row, 0, new QTableWidgetItem(QString::number(ltc->MALOPTC)));
+                ui->tblQLDK_LTC->setItem(row, 1, new QTableWidgetItem(ltc->MAMH));
+                ui->tblQLDK_LTC->setItem(row, 2, new QTableWidgetItem(ltc->NienKhoa));
+                ui->tblQLDK_LTC->setItem(row, 3, new QTableWidgetItem(QString::number(ltc->Hocky)));
+                ui->tblQLDK_LTC->setItem(row, 4, new QTableWidgetItem(QString::number(ltc->Nhom)));
+                ui->tblQLDK_LTC->setItem(row, 5, new QTableWidgetItem(QString::number(ltc->sosvmin)));
+                ui->tblQLDK_LTC->setItem(row, 6, new QTableWidgetItem(QString::number(svdk)));
+                ui->tblQLDK_LTC->setItem(row, 7, new QTableWidgetItem(QString::number(controng)));
+            }
+        }
+    }
+
+    if (!check){
+        QMessageBox::information(this, "Thông báo", "Không có lớp tín chỉ nào ở trong hoc ki " + QString::number(hk) + " và niên khóa " + nienkhoa +"!");
+        return;
+    }
+}
+
+void MainWindow::on_btnQLDK_Huy_clicked()
+{
+    int row = ui->tblQLDK_LTC->rowCount();
+    if (row == 0) {
+        QMessageBox::information(nullptr, "Thông báo", "Không có lớp tín chỉ nào bị hủy (tất cả đều đủ sinh viên).");
+        return;
+    }
+
+    for (int i = 0; i < row; i++){
+        int maLtc = ui->tblQLDK_LTC->item(i, 0)->text().toInt();
+        QMessageBox::StandardButton reply = QMessageBox::question(
+            this,
+            "Xác nhận xóa lớp tín chỉ",
+            QString("Bạn có chắc chắn muốn hủy lớp tín chỉ" + QString::number(maLtc) + " không?"),
+            QMessageBox::Yes | QMessageBox::No
+            );
+        if (reply != QMessageBox::Yes) return;
+        HuyLTC(dsLTC, maLtc);
+    }
+    GhiDanhSachLopTinChi(dsLTC, "DS_LTC_DK.txt");
+    DocDanhSachLopTinChi(dsLTC, "DS_LTC_DK.txt");
+    hienThiDSLTC(dsLTC);
 }
 

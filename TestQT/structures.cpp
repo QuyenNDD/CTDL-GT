@@ -348,3 +348,17 @@ int ThemSVVaoLTC(LopTinChi* ltc, const char* maSv){
     }
     return 3; // Thêm thành công
 }
+
+void HuyLTC(List_LTC& ds, int maLtc){
+    LopTinChi* ltc = NULL;
+    for (int i = 0; i < ds.n; i++){
+        if (ds.nodes[i]->MALOPTC == maLtc){
+            ltc = ds.nodes[i];
+            break;
+        }
+    }
+
+    if(ltc != NULL) {
+        ltc->huylop = true;
+    }
+}

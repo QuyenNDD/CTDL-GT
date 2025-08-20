@@ -83,5 +83,6 @@ SinhVien* TimSinhVienTheoMa(const DS_LOPSV &ds, const char* maSv, char* outMaLop
 MonHoc* TimMonHocTheoMa(treeMH root, const char* maMH);
 LopTinChi* TimLTCTheo4DK(List_LTC &ds, const char* nienkhoa, int hocky, const char* maMh, int nhom);
 int ThemSVVaoLTC(LopTinChi* ltc, const char* maSv);
+void HuyLTC(List_LTC& ds, int maLtc);
 
 #endif // STRUCTURES_H
