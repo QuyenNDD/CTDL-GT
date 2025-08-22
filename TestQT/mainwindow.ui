@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>6</number>
+     <number>7</number>
     </property>
     <widget class="QWidget" name="tabQLMH">
      <attribute name="title">
@@ -442,7 +442,7 @@ border: 2px solid ;</string>
        <cursorShape>ArrowCursor</cursorShape>
       </property>
       <property name="contextMenuPolicy">
-       <enum>Qt::ContextMenuPolicy::DefaultContextMenu</enum>
+       <enum>Qt::DefaultContextMenu</enum>
       </property>
       <property name="styleSheet">
        <string notr="true">#widget_6 {
