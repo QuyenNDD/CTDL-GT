@@ -23,6 +23,10 @@ public:
     void hienThiDSLTC(List_LTC &ds);
     void LoadTableMonHoc(treeMH root);
 
+    void setButtonState(bool state);
+    void clearForm();
+    void hienThiDK_DSLTC(List_LTC &ds, int hk, const QString nienkhoa);
+    void hienThiQLDK_LTC(List_LTC &ds, int hk, const QString nienkhoa);
 private slots:
 
     void on_btnThemMH_clicked();
@@ -54,11 +58,28 @@ private slots:
     void on_tblMH_cellClicked(int row, int column);
 
 
+    void on_btnInDSSV_clicked();
+
+    void on_btnGhiFile_clicked();
+
+    void on_lineMSV_returnPressed();
+
+    void on_lineDK_NK_returnPressed();
+
+    void on_tblDK_DSLTC_cellClicked(int row, int column);
+
+    void on_btnDK_clicked();
+
+    void on_lineQLDK_NK_returnPressed();
+
+    void on_btnQLDK_Huy_clicked();
+
 private:
     Ui::MainWindow *ui;
     DS_LOPSV dsLop;
     List_LTC dsLTC;
     treeMH dsMH = nullptr;
     int maLTCDangChon = -1;
+    LopTinChi* ltcDangChon = NULL;
 };
 #endif // MAINWINDOW_H

@@ -93,5 +93,10 @@ int XoaLTC(List_LTC &ds, int maLtc);
 int HieuChinhLTC(List_LTC &ds, int maLtc, const LopTinChi& ltcMoi);
 LopTinChi* TimLopTinChi(const List_LTC& dsLTC, const char* mamh, const char* nienkhoa, int hocky, int nhom);
 SinhVien* TimSinhVien(const DS_LOPSV& dsLop, const char* masv);
+SinhVien* TimSinhVienTheoMa(const DS_LOPSV &ds, const char* maSv, char* outMaLop = NULL);
+MonHoc* TimMonHocTheoMa(treeMH root, const char* maMH);
+LopTinChi* TimLTCTheo4DK(List_LTC &ds, const char* nienkhoa, int hocky, const char* maMh, int nhom);
+int ThemSVVaoLTC(LopTinChi* ltc, const char* maSv);
+void HuyLTC(List_LTC& ds, int maLtc);
 
 #endif // STRUCTURES_H
