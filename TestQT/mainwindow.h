@@ -27,6 +27,18 @@ public:
     void hienThiQLDK_LTC(List_LTC &ds, int hk, const QString nienkhoa);
 private slots:
 
+    void on_btnThemMH_clicked();
+
+    void on_btnSuaMH_clicked();
+
+    void on_btnXoaMH_clicked();
+
+    void on_lineMaMH_textChanged(const QString &arg1);
+
+    void on_lineTenMH_textChanged(const QString &arg1);
+
+    void on_pushButton_clicked();
+
     void on_btnThem_clicked();
 
     void on_btnXoa_clicked();

@@ -66,13 +66,25 @@ struct List_LTC {
     LopTinChi* nodes[MAX_LTC];
 };
 
-void GhiMonHoc_LNR(treeMH t, FILE* f, int& count);
-void GhiDanhSachMonHoc(treeMH t, const char* filename);
+extern treeMH dsMH;
+
+bool hasSpace(const QString &str);
+int DemSoLuongMonHoc(treeMH root);
+treeMH SearchTree(treeMH root,const char* mamh);
+void Insert_MonHoc(treeMH &root, MonHoc mh);
+void SaveFileMonHoc(treeMH root, QTextStream &out);
 void ThemMonHocVaoCay(treeMH& t, const MonHoc& mh);
-void DocDanhSachMonHoc(treeMH& t, const char* filename);
+void GhiDanhSachMonHoc(treeMH t, const char* filename);
+int DocDanhSachMonHoc(treeMH &root, const QString& tenfile);
+bool SuaMonHoc(treeMH root, const MonHoc& monHocMoi);
+int RemoveTreeMH(treeMH &root,const char *mamh);
+void LuuMonHocVaoMang(treeMH root, nodeMH* ds[], int &n);
+void SapXepTangTheoTenMH(nodeMH* ds[], int n);
+bool MonHocDaDuocDangKy(List_LTC &dsLTC, const char* mamh);
 
 void GhiDanhSachLopSV(const DS_LOPSV& dsLop, const char* filename);
 void DocDanhSachLopSV(DS_LOPSV& dsLop, const char* filename);
+LopSV* TimLop(DS_LOPSV& dsLop, const char* MALOP);
 
 void GhiDanhSachLopTinChi(const List_LTC& dsLTC, const char* filename);
 void DocDanhSachLopTinChi(List_LTC& dsLTC, const char* filename);
@@ -84,5 +96,7 @@ MonHoc* TimMonHocTheoMa(treeMH root, const char* maMH);
 LopTinChi* TimLTCTheo4DK(List_LTC &ds, const char* nienkhoa, int hocky, const char* maMh, int nhom);
 int ThemSVVaoLTC(LopTinChi* ltc, const char* maSv);
 void HuyLTC(List_LTC& ds, int maLtc);
+LopTinChi* TimLopTinChi(const List_LTC& dsLTC, const char* mamh, const char* nienkhoa, int hocky, int nhom);
+SinhVien* TimSinhVien(const DS_LOPSV& dsLop, const char* masv);
 
 #endif // STRUCTURES_H
