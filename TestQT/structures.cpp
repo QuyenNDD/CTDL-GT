@@ -528,3 +528,94 @@ LopSV* TimLop(DS_LOPSV& dsLop, const char* MALOP) {
     }
     return nullptr;
 }
+
+
+nodeMH* TimMonHoc(treeMH root, const char* maMH) {
+    if (root == nullptr) return nullptr;
+    int cmp = strcmp(maMH, root->mh.MAMH);
+    if (cmp == 0) return root;
+    if (cmp < 0) return TimMonHoc(root->left, maMH);
+    return TimMonHoc(root->right, maMH);
+}
+
+float TinhDiemTrungBinhSV(const SinhVien &sv, const List_LTC &dsLTC, treeMH dsMH) {
+    float tongDiem = 0;
+    int tongTC = 0;
+
+    for (int i = 0; i < dsLTC.n; i++) {
+        LopTinChi* ltc = dsLTC.nodes[i];
+        if (ltc == nullptr || ltc->huylop) continue;
+
+        // duyệt danh sách đăng ký của lớp tín chỉ
+        for (PTRDK dk = ltc->dssvdk; dk != nullptr; dk = dk->next) {
+            if (strcmp(dk->dk.MASV, sv.MASV) == 0 && dk->dk.DIEM >= 0) {
+                nodeMH* node = TimMonHoc(dsMH, ltc->MAMH);
+                if (node != nullptr) {
+                    int soTC = node->mh.STCLT + node->mh.STCTH;
+                    tongDiem += dk->dk.DIEM * soTC;
+                    tongTC += soTC;
+                }
+            }
+        }
+    }
+
+    return (tongTC > 0) ? (tongDiem / tongTC) : 0;
+}
+
+SinhVien* TimSinhVienTrongLop(const LopSV& lop, const char* masv) {
+    for (PTRSV p = lop.FirstSV; p != nullptr; p = p->next) {
+        if (strcmp(p->sv.MASV, masv) == 0) {
+            return &p->sv;
+        }
+    }
+    return nullptr;
+}
+
+// So sánh theo Họ + Tên
+int soSanhSV(const SinhVien& a, const SinhVien& b) {
+    int cmpTen = strcmp(a.TEN, b.TEN);
+    if (cmpTen == 0) {
+        return strcmp(a.HO, b.HO);
+    }
+    return cmpTen;
+}
+
+// Selection Sort
+void selectionSort(SinhVien arr[], int n) {
+    for (int i = 0; i < n - 1; i++) {
+        int minIdx = i;
+        for (int j = i + 1; j < n; j++) {
+            if (soSanhSV(arr[j], arr[minIdx]) < 0) {
+                minIdx = j;
+            }
+        }
+        if (minIdx != i) {
+            SinhVien tmp = arr[i];
+            arr[i] = arr[minIdx];
+            arr[minIdx] = tmp;
+        }
+    }
+}
+
+int TongTinChiCuaSV(const SinhVien &sv, List_LTC &dsLTC, treeMH dsMH) {
+    int tongTC = 0;
+
+    // Duyệt tất cả lớp tín chỉ
+    for (int i = 0; i < dsLTC.n; i++) {
+        LopTinChi* ltc = dsLTC.nodes[i];
+        if (ltc == nullptr || ltc->huylop) continue;
+
+        // Duyệt danh sách SV đăng ký trong lớp tín chỉ này
+        for (PTRDK dk = ltc->dssvdk; dk != nullptr; dk = dk->next) {
+            if (strcmp(dk->dk.MASV, sv.MASV) == 0) {
+                // Tìm môn học
+                nodeMH* node = TimMonHoc(dsMH, ltc->MAMH);
+                if (node != nullptr) {
+                    tongTC += node->mh.STCLT + node->mh.STCTH;
+                }
+            }
+        }
+    }
+
+    return tongTC;
+}

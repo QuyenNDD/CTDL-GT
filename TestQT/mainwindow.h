@@ -26,6 +26,10 @@ public:
     void hienThiDK_DSLTC(List_LTC &ds, int hk, const QString nienkhoa);
     void hienThiQLDK_LTC(List_LTC &ds, int hk, const QString nienkhoa);
     void LoadTableMonHoc(treeMH root);
+    void hienThiDanhSachLopSV(const DS_LOPSV& dsLop);
+    void hienThiDanhSachSV(const DS_LOPSV& dsLop);
+    void hienThiSV_Lop(LopSV* lop);
+
 private slots:
 
     void on_btnThemMH_clicked();
@@ -72,6 +76,31 @@ private slots:
 
     void on_tblMH_cellClicked(int row, int column);
 
+    void on_tblLopSV_cellClicked(int row, int column);
+
+    void on_tblSV_cellClicked(int row, int column);
+
+    void on_ThemLSV_clicked();
+
+    void on_SuaLSV_clicked();
+
+    void on_XoaLSV_clicked();
+
+    void on_LuuLSV_clicked();
+
+    void on_btnMaLop_SV_clicked();
+
+    void on_btnThemSV_clicked();
+
+    void on_btnXoaSV_clicked();
+
+    void on_btnSuaSV_clicked();
+
+    void on_btnLuuSV_clicked();
+
+    void on_btnDiemTB_clicked();
+
+    void on_btnDiemTK_clicked();
 
 private:
     Ui::MainWindow *ui;
@@ -80,5 +109,6 @@ private:
     treeMH dsMH = nullptr;
     int maLTCDangChon = -1;
     LopTinChi* ltcDangChon = NULL;
+    LopSV* lopHienTai = nullptr;
 };
 #endif // MAINWINDOW_H

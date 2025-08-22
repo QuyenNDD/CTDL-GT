@@ -85,6 +85,12 @@ bool MonHocDaDuocDangKy(List_LTC &dsLTC, const char* mamh);
 void GhiDanhSachLopSV(const DS_LOPSV& dsLop, const char* filename);
 void DocDanhSachLopSV(DS_LOPSV& dsLop, const char* filename);
 LopSV* TimLop(DS_LOPSV& dsLop, const char* MALOP);
+nodeMH* TimMonHoc(treeMH root, const char* maMH);
+float TinhDiemTrungBinhSV(const SinhVien &sv, const List_LTC &dsLTC, treeMH dsMH);
+SinhVien* TimSinhVienTrongLop(const LopSV& lop, const char* masv);
+int soSanhSV(const SinhVien& a, const SinhVien& b);
+void selectionSort(SinhVien arr[], int n);
+int TongTinChiCuaSV(const SinhVien &sv, List_LTC &dsLTC, treeMH dsMH);
 
 void GhiDanhSachLopTinChi(const List_LTC& dsLTC, const char* filename);
 void DocDanhSachLopTinChi(List_LTC& dsLTC, const char* filename);

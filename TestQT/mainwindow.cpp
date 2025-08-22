@@ -15,12 +15,22 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     ui->tblMH->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     ui->tblND->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->tblSV->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->tblLopSV->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    connect(ui->lineMaMH, &QLineEdit::textChanged,
+            this, &MainWindow::on_lineMaMH_textChanged);
     connect(ui->lineMaMH, &QLineEdit::textChanged,
             this, &MainWindow::on_lineMaMH_textChanged);
     connect(ui->tblMH, &QTableWidget::itemSelectionChanged, this, [=]() {
         bool coDongDuocChon = !ui->tblMH->selectedItems().isEmpty();
         ui->btnSuaMH->setEnabled(coDongDuocChon);
         ui->btnXoaMH->setEnabled(coDongDuocChon);
+
+    connect(ui->tblSV, &QTableWidget::cellClicked,
+        this, &MainWindow::on_tblSV_cellClicked);
+    docDuLieuTuFile();
+    connect(ui->tblLopSV, &QTableWidget::cellClicked,
+        this, &MainWindow::on_tblLopSV_cellClicked);
     });
     docDuLieuTuFile();
     QRegularExpression rx("[A-Za-z]+");
@@ -109,6 +119,15 @@ MainWindow::MainWindow(QWidget *parent)
             ui->lineNDNK->setText(text);
         }
     });
+    ui->txtMaSV->setEnabled(false);
+    ui->txtHo->setEnabled(false);
+    ui->txtTen->setEnabled(false);
+    ui->cbPhai->setEnabled(false);
+    ui->txtSoDT->setEnabled(false);
+    ui->txtEmail->setEnabled(false);
+    ui->btnThemSV->setEnabled(false);
+    ui->btnXoaSV->setEnabled(false);
+    ui->btnSuaSV->setEnabled(false);
 }
 
 MainWindow::~MainWindow()
@@ -138,16 +157,18 @@ void MainWindow::docDuLieuTuFile() {
     DocDanhSachLopSV(dsLop, "DS_LSV_SV.txt");
     DocDanhSachLopTinChi(dsLTC, "DS_LTC_DK.txt");
     hienThiDSLTC(dsLTC);
+    hienThiDanhSachLopSV(dsLop);
+    hienThiDanhSachSV(dsLop);
     LoadTableMonHoc(dsMH);
 }
 
-// void MainWindow::ghiDuLieuTuFile() {
-//     GhiDanhSachMonHoc(dsMH, "DSMH.txt");
-//     GhiDanhSachLopSV(dsLop, "DS_LSV_SV.txt");
-//     GhiDanhSachLopTinChi(dsLTC, "DS_LTC_DK.txt");
+void MainWindow::ghiDuLieuTuFile() {
+    GhiDanhSachMonHoc(dsMH, "DSMH.txt");
+    GhiDanhSachLopSV(dsLop, "DS_LSV_SV.txt");
+    GhiDanhSachLopTinChi(dsLTC, "DS_LTC_DK.txt");
 
-//     QMessageBox::information(this, "Thông báo", "Ghi dữ liệu ra file thành công!");
-// }
+    QMessageBox::information(this, "Thông báo", "Ghi dữ liệu ra file thành công!");
+}
 void MainWindow::on_lineMaMH_textChanged(const QString &text)
 {
     std::string input = text.toStdString();
@@ -1063,3 +1084,577 @@ void MainWindow::on_tblMH_cellClicked(int row, int column)
     ui->spinBox_STCTH->setValue(STCTH);
 }
 
+void MainWindow::hienThiDanhSachLopSV(const DS_LOPSV& dsLop) {
+    // Xóa dữ liệu cũ trên bảng
+    ui->tblLopSV->clearContents();
+    ui->tblLopSV->setRowCount(0);
+
+    // Đặt header cho bảng
+    QStringList headers = {"Mã Lớp", "Tên Lớp"};
+    ui->tblLopSV->setColumnCount(headers.size());
+    ui->tblLopSV->setHorizontalHeaderLabels(headers);
+
+    // Duyệt qua tất cả lớp
+    for (int i = 0; i < dsLop.n; ++i) {
+        const LopSV &lop = dsLop.nodes[i];  // dùng const ref tránh copy
+
+        int row = ui->tblLopSV->rowCount();
+        ui->tblLopSV->insertRow(row);
+
+        ui->tblLopSV->setItem(row, 0, new QTableWidgetItem(QString::fromUtf8(lop.MALOP)));
+        ui->tblLopSV->setItem(row, 1, new QTableWidgetItem(QString::fromUtf8(lop.TENLOP)));
+    }
+    ui->tblLopSV->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+}
+
+void MainWindow::hienThiDanhSachSV(const DS_LOPSV& dsLop) {
+    ui->tblSV->clearContents();
+    ui->tblSV->setRowCount(0);
+
+    QStringList headers = {"Mã SV", "Họ", "Tên", "Phái", "SĐT", "Email"};
+    ui->tblSV->setColumnCount(headers.size());
+    ui->tblSV->setHorizontalHeaderLabels(headers);
+
+    for (int i = 0; i < dsLop.n; ++i) {
+        LopSV lop = dsLop.nodes[i];
+
+        // Gom SV vào mảng tạm
+        int count = 0;
+        PTRSV p = lop.FirstSV;
+        while (p != nullptr) {
+            count++;
+            p = p->next;
+        }
+
+        if (count == 0) continue;
+
+        SinhVien* arr = new SinhVien[count];
+        p = lop.FirstSV;
+        for (int k = 0; k < count; k++) {
+            arr[k] = p->sv;
+            p = p->next;
+        }
+
+        // Sắp xếp selection sort
+        selectionSort(arr, count);
+
+        // Hiển thị sau khi sort
+        for (int k = 0; k < count; k++) {
+            int row = ui->tblSV->rowCount();
+            ui->tblSV->insertRow(row);
+
+            ui->tblSV->setItem(row, 0, new QTableWidgetItem(arr[k].MASV));
+            ui->tblSV->setItem(row, 1, new QTableWidgetItem(arr[k].HO));
+            ui->tblSV->setItem(row, 2, new QTableWidgetItem(arr[k].TEN));
+            ui->tblSV->setItem(row, 3, new QTableWidgetItem(arr[k].PHAI));
+            ui->tblSV->setItem(row, 4, new QTableWidgetItem(arr[k].SODT));
+            ui->tblSV->setItem(row, 5, new QTableWidgetItem(arr[k].Email));
+        }
+
+        delete[] arr;
+    }
+
+    ui->tblSV->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+}
+
+void MainWindow::hienThiSV_Lop(LopSV* lop) {
+    if (lop == nullptr) return;
+
+    // Gom SV vào mảng
+    int count = 0;
+    PTRSV p = lop->FirstSV;
+    while (p != nullptr) {
+        count++;
+        p = p->next;
+    }
+
+    ui->tblSV->clearContents();
+    ui->tblSV->setRowCount(0);
+
+    QStringList headers = {"Mã SV", "Họ", "Tên", "Phái", "SĐT", "Email"};
+    ui->tblSV->setColumnCount(headers.size());
+    ui->tblSV->setHorizontalHeaderLabels(headers);
+
+    if (count == 0) return;
+
+    SinhVien* arr = new SinhVien[count];
+    p = lop->FirstSV;
+    for (int i = 0; i < count; i++) {
+        arr[i] = p->sv;
+        p = p->next;
+    }
+
+    // Sắp xếp selection sort
+    selectionSort(arr, count);
+
+    // Đổ dữ liệu ra bảng
+    for (int i = 0; i < count; i++) {
+        int row = ui->tblSV->rowCount();
+        ui->tblSV->insertRow(row);
+
+        ui->tblSV->setItem(row, 0, new QTableWidgetItem(arr[i].MASV));
+        ui->tblSV->setItem(row, 1, new QTableWidgetItem(arr[i].HO));
+        ui->tblSV->setItem(row, 2, new QTableWidgetItem(arr[i].TEN));
+        ui->tblSV->setItem(row, 3, new QTableWidgetItem(arr[i].PHAI));
+        ui->tblSV->setItem(row, 4, new QTableWidgetItem(arr[i].SODT));
+        ui->tblSV->setItem(row, 5, new QTableWidgetItem(arr[i].Email));
+    }
+
+    delete[] arr;
+    ui->tblSV->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+}
+
+void MainWindow::on_tblLopSV_cellClicked(int row, int /*column*/) {
+    if (row < 0) return;
+
+    QString maLop = ui->tblLopSV->item(row, 0)->text();
+    QString tenLop = ui->tblLopSV->item(row, 1)->text();
+
+    ui->txtMaLop->setText(maLop);
+    ui->txtTenLop->setText(tenLop);
+}
+
+void MainWindow::on_ThemLSV_clicked()
+{
+    QString ma = ui->txtMaLop->text().trimmed();
+    QString ten = ui->txtTenLop->text().trimmed();
+
+    if (ma.isEmpty() || ten.isEmpty()) {
+        QMessageBox::warning(this, "Lỗi", "Mã lớp và tên lớp không được rỗng!");
+        return;
+    }
+
+    // kiểm tra trùng mã lớp
+    for (int i = 0; i < dsLop.n; i++) {
+        if (QString::fromUtf8(dsLop.nodes[i].MALOP) == ma) {
+            QMessageBox::warning(this, "Lỗi", "Mã lớp đã tồn tại!");
+            return;
+        }
+    }
+
+    if (dsLop.n >= MAX_LOPSV) {
+        QMessageBox::warning(this, "Lỗi", "Danh sách lớp đầy!");
+        return;
+    }
+
+    LopSV lop;
+    strcpy(lop.MALOP, ma.toUtf8().constData());
+    strcpy(lop.TENLOP, ten.toUtf8().constData());
+    lop.FirstSV = nullptr;
+
+    dsLop.nodes[dsLop.n++] = lop;
+
+    hienThiDanhSachLopSV(dsLop);
+}
+
+
+void MainWindow::on_SuaLSV_clicked()
+{
+    int row = ui->tblLopSV->currentRow();
+    if (row < 0) {
+        QMessageBox::warning(this, "Lỗi", "Hãy chọn lớp cần sửa!");
+        return;
+    }
+
+    QString ten = ui->txtTenLop->text().trimmed();
+    if (ten.isEmpty()) {
+        QMessageBox::warning(this, "Lỗi", "Tên lớp không được rỗng!");
+        return;
+    }
+
+    strcpy(dsLop.nodes[row].TENLOP, ten.toUtf8().constData());
+
+    hienThiDanhSachLopSV(dsLop);
+}
+
+
+void MainWindow::on_XoaLSV_clicked()
+{
+    int row = ui->tblLopSV->currentRow();
+    if (row < 0) {
+        QMessageBox::warning(this, "Lỗi", "Hãy chọn lớp cần xóa!");
+        return;
+    }
+
+    // giải phóng danh sách SV của lớp này
+    PTRSV p = dsLop.nodes[row].FirstSV;
+    while (p) {
+        PTRSV tmp = p;
+        p = p->next;
+        delete tmp;
+    }
+
+    // dịch trái mảng
+    for (int i = row; i < dsLop.n - 1; i++) {
+        dsLop.nodes[i] = dsLop.nodes[i + 1];
+    }
+    dsLop.n--;
+
+    hienThiDanhSachLopSV(dsLop);
+}
+
+
+void MainWindow::on_LuuLSV_clicked()
+{
+    ghiDuLieuTuFile(); // gọi hàm đã viết sẵn
+    QMessageBox::information(this, "Thông báo", "Đã lưu danh sách lớp thành công!");
+}
+
+void MainWindow::on_btnMaLop_SV_clicked()
+{
+    QString maLop = ui->txtMaLop_SV->text().trimmed();
+
+    if (maLop.isEmpty()) {
+        QMessageBox::warning(this, "Lỗi", "Vui lòng nhập mã lớp!");
+        return;
+    }
+
+    LopSV* lop = TimLop(dsLop, maLop.toStdString().c_str());
+
+    if (lop == nullptr) {
+        QMessageBox::warning(this, "Lỗi", "Không tìm thấy mã lớp: " + maLop);
+        return;
+    }
+
+    lopHienTai = lop;
+
+    // Gọi hàm hiển thị đã sort
+    hienThiSV_Lop(lopHienTai);
+
+    QMessageBox::information(this, "Thông báo",
+                             "Đang nhập sinh viên cho lớp: " + maLop);
+    ui->txtMaSV->setEnabled(true);
+    ui->txtHo->setEnabled(true);
+    ui->txtTen->setEnabled(true);
+    ui->cbPhai->setEnabled(true);
+    ui->txtSoDT->setEnabled(true);
+    ui->txtEmail->setEnabled(true);
+    ui->btnThemSV->setEnabled(true);
+    ui->btnSuaSV->setEnabled(true);
+    ui->btnXoaSV->setEnabled(true);
+}
+
+void MainWindow::on_tblSV_cellClicked(int row, int column)
+{
+    if (row < 0) return;
+
+    // Lấy dữ liệu từ bảng
+    QString maSV  = ui->tblSV->item(row, 0)->text();
+    QString ho    = ui->tblSV->item(row, 1)->text();
+    QString ten   = ui->tblSV->item(row, 2)->text();
+    QString phai  = ui->tblSV->item(row, 3)->text();
+    QString sdt   = ui->tblSV->item(row, 4)->text();
+    QString email = ui->tblSV->item(row, 5)->text();
+
+    // Hiển thị lên các ô nhập liệu
+    ui->txtMaSV->setText(maSV);
+    ui->txtHo->setText(ho);
+    ui->txtTen->setText(ten);
+    ui->txtSoDT->setText(sdt);
+    ui->txtEmail->setText(email);
+
+    // Nếu bạn đã đổi PHAI sang QComboBox (vd: ui->cmbPhai)
+    int index = ui->cbPhai->findText(phai);
+    if (index != -1)
+        ui->cbPhai->setCurrentIndex(index);
+}
+
+
+
+void MainWindow::on_btnThemSV_clicked()
+{
+    if (lopHienTai == nullptr) {
+        QMessageBox::warning(this, "Lỗi", "Hãy chọn lớp trước khi thêm sinh viên!");
+        return;
+    }
+
+    // Lấy dữ liệu từ giao diện
+    SinhVien sv;
+    strcpy(sv.MASV, ui->txtMaSV->text().trimmed().toStdString().c_str());
+    strcpy(sv.HO, ui->txtHo->text().trimmed().toStdString().c_str());
+    strcpy(sv.TEN, ui->txtTen->text().trimmed().toStdString().c_str());
+    strcpy(sv.PHAI, ui->cbPhai->currentText().toStdString().c_str());
+    strcpy(sv.SODT, ui->txtSoDT->text().trimmed().toStdString().c_str());
+    strcpy(sv.Email, ui->txtEmail->text().trimmed().toStdString().c_str());
+
+    if (strlen(sv.MASV) == 0) {
+        QMessageBox::warning(this, "Lỗi", "Mã sinh viên không được để trống!");
+        return;
+    }
+
+    // 🔎 Kiểm tra trùng MASV, SODT, Email
+    for (PTRSV cur = lopHienTai->FirstSV; cur != nullptr; cur = cur->next) {
+        if (strcmp(cur->sv.MASV, sv.MASV) == 0) {
+            QMessageBox::warning(this, "Lỗi", "Mã sinh viên đã tồn tại!");
+            return;
+        }
+        if (strlen(sv.SODT) > 0 && strcmp(cur->sv.SODT, sv.SODT) == 0) {
+            QMessageBox::warning(this, "Lỗi", "Số điện thoại đã tồn tại!");
+            return;
+        }
+        if (strlen(sv.Email) > 0 && strcmp(cur->sv.Email, sv.Email) == 0) {
+            QMessageBox::warning(this, "Lỗi", "Email đã tồn tại!");
+            return;
+        }
+    }
+
+    // Kiểm tra số điện thoại chỉ chứa số
+    QString sodt = ui->txtSoDT->text().trimmed();
+    QRegularExpression regexSdt("^\\d+$");
+    if (!sodt.isEmpty() && !regexSdt.match(sodt).hasMatch()) {
+        QMessageBox::warning(this, "Lỗi", "Số điện thoại chỉ được chứa chữ số!");
+        return;
+    }
+
+    // Kiểm tra email hợp lệ
+    QString email = ui->txtEmail->text().trimmed();
+    QRegularExpression regexEmail("^[\\w.%+-]+@[\\w.-]+\\.[a-zA-Z]{2,}$");
+    if (!email.isEmpty() && !regexEmail.match(email).hasMatch()) {
+        QMessageBox::warning(this, "Lỗi", "Email không hợp lệ!");
+        return;
+    }
+
+    // Thêm vào đầu danh sách
+    PTRSV node = new nodeSV;
+    node->sv = sv;
+    node->next = lopHienTai->FirstSV;
+    lopHienTai->FirstSV = node;
+
+    hienThiSV_Lop(lopHienTai);
+}
+
+
+void MainWindow::on_btnXoaSV_clicked()
+{
+    if (lopHienTai == nullptr) {
+        QMessageBox::warning(this, "Lỗi", "Hãy chọn lớp trước khi xóa sinh viên!");
+        return;
+    }
+
+    QString maSV = ui->txtMaSV->text().trimmed();
+    if (maSV.isEmpty()) {
+        QMessageBox::warning(this, "Lỗi", "Nhập MASV để xóa!");
+        return;
+    }
+
+    PTRSV prev = nullptr;
+    PTRSV cur = lopHienTai->FirstSV;
+
+    while (cur != nullptr && strcmp(cur->sv.MASV, maSV.toStdString().c_str()) != 0) {
+        prev = cur;
+        cur = cur->next;
+    }
+
+    if (cur == nullptr) {
+        QMessageBox::warning(this, "Lỗi", "Không tìm thấy sinh viên!");
+        return;
+    }
+
+    if (prev == nullptr) {
+        lopHienTai->FirstSV = cur->next;
+    } else {
+        prev->next = cur->next;
+    }
+    delete cur;
+
+    hienThiSV_Lop(lopHienTai);
+}
+
+
+void MainWindow::on_btnSuaSV_clicked()
+{
+    if (lopHienTai == nullptr) {
+        QMessageBox::warning(this, "Lỗi", "Hãy chọn lớp trước khi sửa!");
+        return;
+    }
+
+    QString maSV = ui->txtMaSV->text().trimmed();
+    if (maSV.isEmpty()) {
+        QMessageBox::warning(this, "Lỗi", "Nhập MASV để sửa!");
+        return;
+    }
+
+    PTRSV cur = lopHienTai->FirstSV;
+    while (cur != nullptr && strcmp(cur->sv.MASV, maSV.toStdString().c_str()) != 0) {
+        cur = cur->next;
+    }
+
+    if (cur == nullptr) {
+        QMessageBox::warning(this, "Lỗi", "Không tìm thấy sinh viên!");
+        return;
+    }
+
+    // Lấy dữ liệu mới
+    char ho[51], ten[11], sdt[16], email[51];
+    strcpy(ho, ui->txtHo->text().trimmed().toStdString().c_str());
+    strcpy(ten, ui->txtTen->text().trimmed().toStdString().c_str());
+    QString phaiStr = ui->cbPhai->currentText();
+    strcpy(cur->sv.PHAI, phaiStr.toStdString().c_str());
+    strcpy(sdt, ui->txtSoDT->text().trimmed().toStdString().c_str());
+    strcpy(email, ui->txtEmail->text().trimmed().toStdString().c_str());
+
+    // 🔎 Kiểm tra trùng SDT, Email với sinh viên khác
+    for (PTRSV p = lopHienTai->FirstSV; p != nullptr; p = p->next) {
+        if (p == cur) continue; // bỏ qua chính nó
+        if (strlen(sdt) > 0 && strcmp(p->sv.SODT, sdt) == 0) {
+            QMessageBox::warning(this, "Lỗi", "Số điện thoại đã tồn tại!");
+            return;
+        }
+        if (strlen(email) > 0 && strcmp(p->sv.Email, email) == 0) {
+            QMessageBox::warning(this, "Lỗi", "Email đã tồn tại!");
+            return;
+        }
+    }
+
+    // Cập nhật thông tin
+    strcpy(cur->sv.HO, ho);
+    strcpy(cur->sv.TEN, ten);
+    strcpy(cur->sv.SODT, sdt);
+    strcpy(cur->sv.Email, email);
+
+    hienThiSV_Lop(lopHienTai);
+}
+
+
+void MainWindow::on_btnLuuSV_clicked()
+{
+    ghiDuLieuTuFile();  // bạn đã có sẵn hàm này trong MainWindow
+    QMessageBox::information(this, "Thông báo", "Đã lưu danh sách sinh viên ra file!");
+}
+
+
+void MainWindow::on_btnDiemTB_clicked()
+{
+    QString maLop = ui->txtDiemTB->text().trimmed();
+    if (maLop.isEmpty()) {
+        QMessageBox::warning(this, "Lỗi", "Vui lòng nhập mã lớp!");
+        return;
+    }
+
+    // Tìm lớp theo mã
+    LopSV* lop = TimLop(dsLop, maLop.toUtf8().constData());
+    if (!lop) {
+        QMessageBox::warning(this, "Lỗi", "Không tìm thấy lớp!");
+        return;
+    }
+
+    // ✅ Hiện thông tin lớp vào lineEdit
+    ui->hienLopDTB->setText(QString::fromUtf8(lop->MALOP));
+
+    // ✅ Tính tổng số tín chỉ của lớp
+    int tongTinChi = 0;
+    for (PTRSV p = lop->FirstSV; p != nullptr; p = p->next) {
+        tongTinChi += TongTinChiCuaSV(p->sv, dsLTC, dsMH);
+        // 👉 bạn cần viết hàm TongTinChiCuaSV(sv, dsLTC, dsMH)
+    }
+    ui->lineEditTinChiK->setText(QString::number(tongTinChi));
+
+    // =====================
+    // Hiển thị bảng điểm TB
+    // =====================
+    ui->tblKQ->clearContents();
+    ui->tblKQ->setRowCount(0);
+
+    QStringList headers = {"STT", "MASV", "Họ Tên", "Điểm TB"};
+    ui->tblKQ->setColumnCount(headers.size());
+    ui->tblKQ->setHorizontalHeaderLabels(headers);
+
+    int stt = 1;
+    for (PTRSV p = lop->FirstSV; p != nullptr; p = p->next) {
+        const SinhVien &sv = p->sv;
+        float diemTB = TinhDiemTrungBinhSV(sv, dsLTC, dsMH);
+
+        int row = ui->tblKQ->rowCount();
+        ui->tblKQ->insertRow(row);
+
+        ui->tblKQ->setItem(row, 0, new QTableWidgetItem(QString::number(stt++)));
+        ui->tblKQ->setItem(row, 1, new QTableWidgetItem(QString::fromUtf8(sv.MASV)));
+        ui->tblKQ->setItem(row, 2, new QTableWidgetItem(QString::fromUtf8(sv.HO) + " " + QString::fromUtf8(sv.TEN)));
+        ui->tblKQ->setItem(row, 3, new QTableWidgetItem(QString::number(diemTB, 'f', 2)));
+    }
+
+    ui->tblKQ->resizeColumnsToContents();
+}
+
+
+void MainWindow::on_btnDiemTK_clicked()
+{
+    QString maLop = ui->txtDiemTK->text().trimmed();
+    if (maLop.isEmpty()) {
+        QMessageBox::warning(this, "Lỗi", "Vui lòng nhập mã lớp!");
+        return;
+    }
+
+    // 1. Tìm lớp
+    LopSV* lop = TimLop(dsLop, maLop.toUtf8().constData());
+    if (lop == nullptr) {
+        QMessageBox::warning(this, "Lỗi", "Không tìm thấy lớp!");
+        return;
+    }
+
+    // 2. Thu thập tất cả mã môn học có SV lớp này tham gia
+    QStringList dsMonHoc;
+    for (int i = 0; i < dsLTC.n; i++) {
+        LopTinChi* ltc = dsLTC.nodes[i];
+        for (PTRDK p = ltc->dssvdk; p != nullptr; p = p->next) {
+            // kiểm tra SV này có thuộc lớp đang xét không
+            if (TimSinhVienTrongLop(*lop, p->dk.MASV) != nullptr) {
+                QString mamh = QString::fromUtf8(ltc->MAMH);
+                if (!dsMonHoc.contains(mamh)) {
+                    dsMonHoc << mamh;
+                }
+            }
+        }
+    }
+    dsMonHoc.sort();
+
+    // 3. Setup bảng
+    QStringList headers;
+    headers << "STT" << "Mã SV" << "Họ Tên";
+    headers << dsMonHoc;
+
+    ui->tblDiemTK->clearContents();
+    ui->tblDiemTK->setRowCount(0);
+    ui->tblDiemTK->setColumnCount(headers.size());
+    ui->tblDiemTK->setHorizontalHeaderLabels(headers);
+
+    // 4. Hiển thị từng SV trong lớp
+    int stt = 1;
+    for (PTRSV sv = lop->FirstSV; sv != nullptr; sv = sv->next) {
+        int row = ui->tblDiemTK->rowCount();
+        ui->tblDiemTK->insertRow(row);
+
+        ui->tblDiemTK->setItem(row, 0, new QTableWidgetItem(QString::number(stt++)));
+        ui->tblDiemTK->setItem(row, 1, new QTableWidgetItem(QString::fromUtf8(sv->sv.MASV)));
+        ui->tblDiemTK->setItem(row, 2, new QTableWidgetItem(
+                                           QString("%1 %2").arg(sv->sv.HO).arg(sv->sv.TEN)
+                                           ));
+
+        // Với từng môn học -> tìm điểm cao nhất của SV này
+        for (int j = 0; j < dsMonHoc.size(); j++) {
+            QString mamh = dsMonHoc[j];
+            float diemMax = -1;
+
+            for (int k = 0; k < dsLTC.n; k++) {
+                LopTinChi* ltc = dsLTC.nodes[k];
+                if (mamh == QString::fromUtf8(ltc->MAMH)) {
+                    for (PTRDK p = ltc->dssvdk; p != nullptr; p = p->next) {
+                        if (strcmp(p->dk.MASV, sv->sv.MASV) == 0) {
+                            if (p->dk.DIEM > diemMax) {
+                                diemMax = p->dk.DIEM;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (diemMax >= 0) {
+                ui->tblDiemTK->setItem(row, 3 + j, new QTableWidgetItem(QString::number(diemMax)));
+            } else {
+                ui->tblDiemTK->setItem(row, 3 + j, new QTableWidgetItem("-"));
+            }
+        }
+    }
+
+    ui->tblDiemTK->resizeColumnsToContents();
+}
