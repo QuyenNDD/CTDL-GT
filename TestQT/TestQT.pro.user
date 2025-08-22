@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
+<<<<<<< HEAD
 <!-- Written by QtCreator 17.0.0, 2025-08-22T21:59:33. -->
+=======
+<!-- Written by QtCreator 17.0.0, 2025-08-20T07:30:58. -->
+>>>>>>> remotes/origin/quyen
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>

@@ -152,7 +152,7 @@ void DocDanhSachLopSV(DS_LOPSV& dsLop, const char* filename) {
 
 
 void GhiDanhSachLopTinChi(const List_LTC& dsLTC, const char* filename) {
-    FILE* f = fopen(filename, "w");
+    FILE* f = fopen(filename, "wt");
     if (!f) {
         printf("Không thể mở file để ghi.\n");
         return;
@@ -161,6 +161,7 @@ void GhiDanhSachLopTinChi(const List_LTC& dsLTC, const char* filename) {
     fprintf(f, "%d\n", dsLTC.n);
     for (int i = 0; i < dsLTC.n; ++i) {
         LopTinChi* ltc = dsLTC.nodes[i];
+
         fprintf(f, "%d|%s|%s|%d|%d|%d|%d|%d\n",
                 ltc->MALOPTC, ltc->MAMH, ltc->NienKhoa,
                 ltc->Hocky, ltc->Nhom, ltc->sosvmin, ltc->sosvmax, ltc->huylop ? 1 : 0);
@@ -228,4 +229,136 @@ void DocDanhSachLopTinChi(List_LTC& dsLTC, const char* filename) {
     }
 
     fclose(f);
+}
+
+bool TimMaMonHoc(treeMH root, const char* maMH){
+    while (root != NULL){
+        int cmp = strcmp(maMH, root->mh.MAMH);
+        if (cmp == 0) return true;
+        else if (cmp > 0) {
+            root = root->right;
+        }else {
+            root = root->left;
+        }
+    }
+    return false;
+}
+
+MonHoc* TimMonHocTheoMa(treeMH root, const char* maMH){
+    while (root != NULL) {
+        int cmp = strcmp(maMH, root->mh.MAMH);
+        if (cmp == 0) return &root->mh;
+        else if (cmp < 0) root = root->left;
+        else root = root->right;
+    }
+    return NULL;
+}
+
+int XoaLTC(List_LTC &ds, int maLtc){
+    for (int i = 0; i < ds.n; i++){
+        LopTinChi* ltc = ds.nodes[i];
+        if (ltc->MALOPTC == maLtc){
+            if (ltc->dssvdk != NULL){
+                return -1; // Lớp đã có sinh viên đăng kí
+            }
+            delete ltc;
+            for (int j = i; j < ds.n - 1; j++){
+                ds.nodes[j] = ds.nodes[j + 1];
+            }
+            ds.n--;
+            return 1; // Đã xóa
+        }
+    }
+    return 0; // Không tìm thấy;
+}
+
+int HieuChinhLTC(List_LTC &ds, int maLtc, const LopTinChi& ltcMoi){
+    for (int i = 0; i < ds.n; i++){
+        LopTinChi* ltc = ds.nodes[i];
+        if (ltc->MALOPTC == maLtc){
+            strcpy(ltc->MAMH, ltcMoi.MAMH);
+            strcpy(ltc->NienKhoa, ltcMoi.NienKhoa);
+            ltc->Hocky = ltcMoi.Hocky;
+            ltc->Nhom = ltcMoi.Nhom;
+            ltc->sosvmin = ltcMoi.sosvmin;
+            ltc->sosvmax = ltcMoi.sosvmax;
+            ltc->huylop = ltcMoi.huylop;
+            return 1; //Đã sửa
+        }
+    }
+    return 0; // Không tìm thấy
+}
+
+SinhVien* TimSinhVienTheoMa(const DS_LOPSV &ds, const char* maSv, char* outMaLop){
+    for (int i = 0; i < ds.n; i++){
+        PTRSV p = ds.nodes[i].FirstSV;
+        while (p != NULL){
+            if (strcmp(p->sv.MASV, maSv) == 0){
+                if (outMaLop != NULL){
+                    strcpy(outMaLop, ds.nodes[i].MALOP);
+                    return &p->sv;
+                }
+            }
+            p = p->next;
+        }
+    }
+    return NULL;
+}
+
+LopTinChi* TimLTCTheo4DK(List_LTC &ds, const char* nienkhoa, int hocky, const char* maMh, int nhom){
+    for (int i = 0; i < ds.n; i++){
+        LopTinChi* ltc = ds.nodes[i];
+        if (strcmp(ltc->NienKhoa, nienkhoa) == 0 &&
+            ltc->Hocky == hocky &&
+            strcmp(ltc->MAMH, maMh) == 0 &&
+            ltc->Nhom == nhom){
+            return ltc;
+        }
+    }
+    return NULL;
+}
+
+int ThemSVVaoLTC(LopTinChi* ltc, const char* maSv){
+    if (!ltc) return 0; //Không có lớp tín chỉ
+
+    //Kiểm tra sinh viên đã đăng kí chưa
+    PTRDK p = ltc->dssvdk;
+    int count = 0;
+    while(p){
+        if (strcmp(p->dk.MASV, maSv) == 0) return 1; // Sinh viên đã đăng kí
+        count++;
+        p = p->next;
+    }
+
+    if (count >= ltc->sosvmax) return 2; // Đã đầy sinh viên
+
+    PTRDK newNode = new nodeDK;
+    strcpy(newNode->dk.MASV, maSv);
+    newNode->dk.DIEM = 0;
+    newNode->next = NULL;
+
+    if (!ltc->dssvdk) {
+        ltc->dssvdk = newNode;
+    }else {
+        p = ltc->dssvdk;
+        while(p->next){
+            p = p->next;
+        }
+        p->next = newNode;
+    }
+    return 3; // Thêm thành công
+}
+
+void HuyLTC(List_LTC& ds, int maLtc){
+    LopTinChi* ltc = NULL;
+    for (int i = 0; i < ds.n; i++){
+        if (ds.nodes[i]->MALOPTC == maLtc){
+            ltc = ds.nodes[i];
+            break;
+        }
+    }
+
+    if(ltc != NULL) {
+        ltc->huylop = true;
+    }
 }
