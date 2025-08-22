@@ -25,6 +25,7 @@ public:
     void clearForm();
     void hienThiDK_DSLTC(List_LTC &ds, int hk, const QString nienkhoa);
     void hienThiQLDK_LTC(List_LTC &ds, int hk, const QString nienkhoa);
+    void LoadTableMonHoc(treeMH root);
 private slots:
 
     void on_btnThemMH_clicked();
@@ -62,6 +63,15 @@ private slots:
     void on_lineQLDK_NK_returnPressed();
 
     void on_btnQLDK_Huy_clicked();
+
+    void on_lineNDMH_textChanged(const QString &arg1);
+
+    void on_btnNDSearch_clicked();
+
+    void on_btnNDSave_clicked();
+
+    void on_tblMH_cellClicked(int row, int column);
+
 
 private:
     Ui::MainWindow *ui;
