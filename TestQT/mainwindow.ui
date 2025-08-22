@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>3</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="tabQLMH">
      <attribute name="title">
@@ -657,7 +657,7 @@ border: 2px solid ;</string>
           <string>Mã lớp:</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignmentFlag::AlignCenter</set>
+          <set>Qt::AlignCenter</set>
          </property>
         </widget>
        </item>
@@ -670,7 +670,7 @@ border: 2px solid ;</string>
           <string>Tên lớp:</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignmentFlag::AlignCenter</set>
+          <set>Qt::AlignCenter</set>
          </property>
         </widget>
        </item>
@@ -888,7 +888,7 @@ border: 2px solid ;</string>
           <string>BẢNG THỐNG KÊ ĐIỂM TRUNG BÌNH KHÓA HỌC</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignmentFlag::AlignCenter</set>
+          <set>Qt::AlignCenter</set>
          </property>
         </widget>
         <widget class="QLabel" name="label_21">
@@ -904,7 +904,7 @@ border: 2px solid ;</string>
           <string>Lớp: </string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
          </property>
         </widget>
         <widget class="QLineEdit" name="hienLopDTB">
@@ -933,7 +933,7 @@ border: 2px solid ;</string>
           <string>Tổng số tín chỉ:</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
          </property>
         </widget>
         <widget class="QLineEdit" name="lineEditTinChiK">
@@ -1019,7 +1019,7 @@ border: 2px solid ;</string>
           <string>BẢNG ĐIỂM TỔNG KẾT</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignmentFlag::AlignCenter</set>
+          <set>Qt::AlignCenter</set>
          </property>
         </widget>
         <widget class="QLabel" name="label_25">
@@ -1224,7 +1224,7 @@ border: 2px solid ;</string>
        <cursorShape>ArrowCursor</cursorShape>
       </property>
       <property name="contextMenuPolicy">
-       <enum>Qt::ContextMenuPolicy::DefaultContextMenu</enum>
+       <enum>Qt::DefaultContextMenu</enum>
       </property>
       <property name="styleSheet">
        <string notr="true">#widget_6 {
