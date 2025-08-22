@@ -92,7 +92,6 @@ int soSanhSV(const SinhVien& a, const SinhVien& b);
 void selectionSort(SinhVien arr[], int n);
 int TongTinChiCuaSV(const SinhVien &sv, List_LTC &dsLTC, treeMH dsMH);
 
-
 void GhiDanhSachLopTinChi(const List_LTC& dsLTC, const char* filename);
 void DocDanhSachLopTinChi(List_LTC& dsLTC, const char* filename);
 bool TimMaMonHoc(treeMH root, const char* maMH);

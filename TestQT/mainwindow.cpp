@@ -1126,10 +1126,10 @@ void MainWindow::on_btnDiemTB_clicked()
         return;
     }
 
-    // ✅ Hiện thông tin lớp vào lineEdit
+    // Hiện thông tin lớp vào lineEdit
     ui->hienLopDTB->setText(QString::fromUtf8(lop->MALOP));
 
-    // ✅ Tính tổng số tín chỉ của lớp
+    // Tính tổng số tín chỉ của lớp
     int tongTinChi = 0;
     for (PTRSV p = lop->FirstSV; p != nullptr; p = p->next) {
         tongTinChi += TongTinChiCuaSV(p->sv, dsLTC, dsMH);
@@ -1137,9 +1137,7 @@ void MainWindow::on_btnDiemTB_clicked()
     }
     ui->lineEditTinChiK->setText(QString::number(tongTinChi));
 
-    // =====================
     // Hiển thị bảng điểm TB
-    // =====================
     ui->tblKQ->clearContents();
     ui->tblKQ->setRowCount(0);
 

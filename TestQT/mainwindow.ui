@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>3</number>
+     <number>7</number>
     </property>
     <widget class="QWidget" name="tabQLMH">
      <attribute name="title">
@@ -781,7 +781,7 @@ border: 2px solid ;</string>
        </rect>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="DTBTheoSoTC">
        <attribute name="title">
@@ -853,7 +853,7 @@ border: 2px solid ;</string>
        <widget class="QPushButton" name="btnDiemTB">
         <property name="geometry">
          <rect>
-          <x>350</x>
+          <x>340</x>
           <y>100</y>
           <width>90</width>
           <height>29</height>
