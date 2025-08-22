@@ -22,10 +22,12 @@ public:
     int demSoLuongSvDK(PTRDK head);
     void hienThiDSLTC(List_LTC &ds);
     void LoadTableMonHoc(treeMH root);
-    void setButtonState(bool state);
-    void clearForm();
-    void hienThiDK_DSLTC(List_LTC &ds, int hk, const QString nienkhoa);
-    void hienThiQLDK_LTC(List_LTC &ds, int hk, const QString nienkhoa);
+    void hienThiDanhSachLopSV(const DS_LOPSV& dsLop);
+    void hienThiDanhSachSV(const DS_LOPSV& dsLop);
+    void hienThiSV_Lop(LopSV* lop);
+    void themSinhVien(const QString &maLop, const SinhVien &sv);
+    void suaSinhVien(const QString &maSV, const SinhVien &svMoi);
+    void xoaSinhVien(const QString &maSV);
 
 private slots:
 
@@ -57,21 +59,31 @@ private slots:
 
     void on_tblMH_cellClicked(int row, int column);
 
-    void on_btnInDSSV_clicked();
+    void on_tblLopSV_cellClicked(int row, int column);
 
-    void on_btnGhiFile_clicked();
+    void on_tblSV_cellClicked(int row, int column);
 
-    void on_lineMSV_returnPressed();
+    void on_ThemLSV_clicked();
 
-    void on_lineDK_NK_returnPressed();
+    void on_SuaLSV_clicked();
 
-    void on_tblDK_DSLTC_cellClicked(int row, int column);
+    void on_XoaLSV_clicked();
 
-    void on_btnDK_clicked();
+    void on_LuuLSV_clicked();
 
-    void on_lineQLDK_NK_returnPressed();
+    void on_btnMaLop_SV_clicked();
 
-    void on_btnQLDK_Huy_clicked();
+    void on_btnThemSV_clicked();
+
+    void on_btnXoaSV_clicked();
+
+    void on_btnSuaSV_clicked();
+
+    void on_btnLuuSV_clicked();
+
+    void on_btnDiemTB_clicked();
+
+    void on_btnDiemTK_clicked();
 
 private:
     Ui::MainWindow *ui;
@@ -79,6 +91,6 @@ private:
     List_LTC dsLTC;
     treeMH dsMH = nullptr;
     int maLTCDangChon = -1;
-    LopTinChi* ltcDangChon = NULL;
+    LopSV* lopHienTai = nullptr;  // lớp hiện tại khi nhập SV
 };
 #endif // MAINWINDOW_H

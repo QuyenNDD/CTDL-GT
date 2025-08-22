@@ -283,7 +283,7 @@ void DocDanhSachLopSV(DS_LOPSV& dsLop, const char* filename) {
 
 
 void GhiDanhSachLopTinChi(const List_LTC& dsLTC, const char* filename) {
-    FILE* f = fopen(filename, "wt");
+    FILE* f = fopen(filename, "w");
     if (!f) {
         printf("Không thể mở file để ghi.\n");
         return;
@@ -292,7 +292,6 @@ void GhiDanhSachLopTinChi(const List_LTC& dsLTC, const char* filename) {
     fprintf(f, "%d\n", dsLTC.n);
     for (int i = 0; i < dsLTC.n; ++i) {
         LopTinChi* ltc = dsLTC.nodes[i];
-
         fprintf(f, "%d|%s|%s|%d|%d|%d|%d|%d\n",
                 ltc->MALOPTC, ltc->MAMH, ltc->NienKhoa,
                 ltc->Hocky, ltc->Nhom, ltc->sosvmin, ltc->sosvmax, ltc->huylop ? 1 : 0);
@@ -375,16 +374,6 @@ bool TimMaMonHoc(treeMH root, const char* maMH){
     return false;
 }
 
-MonHoc* TimMonHocTheoMa(treeMH root, const char* maMH){
-    while (root != NULL) {
-        int cmp = strcmp(maMH, root->mh.MAMH);
-        if (cmp == 0) return &root->mh;
-        else if (cmp < 0) root = root->left;
-        else root = root->right;
-    }
-    return NULL;
-}
-
 int XoaLTC(List_LTC &ds, int maLtc){
     for (int i = 0; i < ds.n; i++){
         LopTinChi* ltc = ds.nodes[i];
@@ -455,76 +444,105 @@ LopSV* TimLop(DS_LOPSV& dsLop, const char* MALOP) {
     return nullptr;
 }
 
-SinhVien* TimSinhVienTheoMa(const DS_LOPSV &ds, const char* maSv, char* outMaLop){
-    for (int i = 0; i < ds.n; i++){
-        PTRSV p = ds.nodes[i].FirstSV;
-        while (p != NULL){
-            if (strcmp(p->sv.MASV, maSv) == 0){
-                if (outMaLop != NULL){
-                    strcpy(outMaLop, ds.nodes[i].MALOP);
-                    return &p->sv;
-                }
-            }
-            p = p->next;
-        }
-    }
-    return NULL;
-}
 
-LopTinChi* TimLTCTheo4DK(List_LTC &ds, const char* nienkhoa, int hocky, const char* maMh, int nhom){
-    for (int i = 0; i < ds.n; i++){
-        LopTinChi* ltc = ds.nodes[i];
-        if (strcmp(ltc->NienKhoa, nienkhoa) == 0 &&
-            ltc->Hocky == hocky &&
-            strcmp(ltc->MAMH, maMh) == 0 &&
-            ltc->Nhom == nhom){
-            return ltc;
-        }
-    }
-    return NULL;
-}
-
-int ThemSVVaoLTC(LopTinChi* ltc, const char* maSv){
-    if (!ltc) return 0; //Không có lớp tín chỉ
-
-    //Kiểm tra sinh viên đã đăng kí chưa
-    PTRDK p = ltc->dssvdk;
-    int count = 0;
-    while(p){
-        if (strcmp(p->dk.MASV, maSv) == 0) return 1; // Sinh viên đã đăng kí
-        count++;
+// Tìm sinh viên theo mã
+SinhVien* TimSinhVienTrongLop(PTRSV First, const char* maSV) {
+    PTRSV p = First;
+    while (p != nullptr) {
+        if (strcmp(p->sv.MASV, maSV) == 0) return &p->sv;
         p = p->next;
     }
-
-    if (count >= ltc->sosvmax) return 2; // Đã đầy sinh viên
-
-    PTRDK newNode = new nodeDK;
-    strcpy(newNode->dk.MASV, maSv);
-    newNode->dk.DIEM = 0;
-    newNode->next = NULL;
-
-    if (!ltc->dssvdk) {
-        ltc->dssvdk = newNode;
-    }else {
-        p = ltc->dssvdk;
-        while(p->next){
-            p = p->next;
-        }
-        p->next = newNode;
-    }
-    return 3; // Thêm thành công
+    return nullptr;
 }
 
-void HuyLTC(List_LTC& ds, int maLtc){
-    LopTinChi* ltc = NULL;
-    for (int i = 0; i < ds.n; i++){
-        if (ds.nodes[i]->MALOPTC == maLtc){
-            ltc = ds.nodes[i];
-            break;
+
+nodeMH* TimMonHoc(treeMH root, const char* maMH) {
+    if (root == nullptr) return nullptr;
+    int cmp = strcmp(maMH, root->mh.MAMH);
+    if (cmp == 0) return root;
+    if (cmp < 0) return TimMonHoc(root->left, maMH);
+    return TimMonHoc(root->right, maMH);
+}
+
+float TinhDiemTrungBinhSV(const SinhVien &sv, const List_LTC &dsLTC, treeMH dsMH) {
+    float tongDiem = 0;
+    int tongTC = 0;
+
+    for (int i = 0; i < dsLTC.n; i++) {
+        LopTinChi* ltc = dsLTC.nodes[i];
+        if (ltc == nullptr || ltc->huylop) continue;
+
+        // duyệt danh sách đăng ký của lớp tín chỉ
+        for (PTRDK dk = ltc->dssvdk; dk != nullptr; dk = dk->next) {
+            if (strcmp(dk->dk.MASV, sv.MASV) == 0 && dk->dk.DIEM >= 0) {
+                nodeMH* node = TimMonHoc(dsMH, ltc->MAMH);
+                if (node != nullptr) {
+                    int soTC = node->mh.STCLT + node->mh.STCTH;
+                    tongDiem += dk->dk.DIEM * soTC;
+                    tongTC += soTC;
+                }
+            }
         }
     }
 
-    if(ltc != NULL) {
-        ltc->huylop = true;
+    return (tongTC > 0) ? (tongDiem / tongTC) : 0;
+}
+
+SinhVien* TimSinhVienTrongLop(const LopSV& lop, const char* masv) {
+    for (PTRSV p = lop.FirstSV; p != nullptr; p = p->next) {
+        if (strcmp(p->sv.MASV, masv) == 0) {
+            return &p->sv;
+        }
+    }
+    return nullptr;
+}
+
+// So sánh theo Họ + Tên
+int soSanhSV(const SinhVien& a, const SinhVien& b) {
+    int cmpTen = strcmp(a.TEN, b.TEN);
+    if (cmpTen == 0) {
+        return strcmp(a.HO, b.HO);
+    }
+    return cmpTen;
+}
+
+// Selection Sort
+void selectionSort(SinhVien arr[], int n) {
+    for (int i = 0; i < n - 1; i++) {
+        int minIdx = i;
+        for (int j = i + 1; j < n; j++) {
+            if (soSanhSV(arr[j], arr[minIdx]) < 0) {
+                minIdx = j;
+            }
+        }
+        if (minIdx != i) {
+            SinhVien tmp = arr[i];
+            arr[i] = arr[minIdx];
+            arr[minIdx] = tmp;
+        }
     }
 }
+
+int TongTinChiCuaSV(const SinhVien &sv, List_LTC &dsLTC, treeMH dsMH) {
+    int tongTC = 0;
+
+    // Duyệt tất cả lớp tín chỉ
+    for (int i = 0; i < dsLTC.n; i++) {
+        LopTinChi* ltc = dsLTC.nodes[i];
+        if (ltc == nullptr || ltc->huylop) continue;
+
+        // Duyệt danh sách SV đăng ký trong lớp tín chỉ này
+        for (PTRDK dk = ltc->dssvdk; dk != nullptr; dk = dk->next) {
+            if (strcmp(dk->dk.MASV, sv.MASV) == 0) {
+                // Tìm môn học
+                nodeMH* node = TimMonHoc(dsMH, ltc->MAMH);
+                if (node != nullptr) {
+                    tongTC += node->mh.STCLT + node->mh.STCTH;
+                }
+            }
+        }
+    }
+
+    return tongTC;
+}
+

@@ -85,6 +85,13 @@ bool MonHocDaDuocDangKy(List_LTC &dsLTC, const char* mamh);
 void GhiDanhSachLopSV(const DS_LOPSV& dsLop, const char* filename);
 void DocDanhSachLopSV(DS_LOPSV& dsLop, const char* filename);
 LopSV* TimLop(DS_LOPSV& dsLop, const char* MALOP);
+nodeMH* TimMonHoc(treeMH root, const char* maMH);
+float TinhDiemTrungBinhSV(const SinhVien &sv, const List_LTC &dsLTC, treeMH dsMH);
+SinhVien* TimSinhVienTrongLop(const LopSV& lop, const char* masv);
+int soSanhSV(const SinhVien& a, const SinhVien& b);
+void selectionSort(SinhVien arr[], int n);
+int TongTinChiCuaSV(const SinhVien &sv, List_LTC &dsLTC, treeMH dsMH);
+
 
 void GhiDanhSachLopTinChi(const List_LTC& dsLTC, const char* filename);
 void DocDanhSachLopTinChi(List_LTC& dsLTC, const char* filename);
@@ -93,10 +100,5 @@ int XoaLTC(List_LTC &ds, int maLtc);
 int HieuChinhLTC(List_LTC &ds, int maLtc, const LopTinChi& ltcMoi);
 LopTinChi* TimLopTinChi(const List_LTC& dsLTC, const char* mamh, const char* nienkhoa, int hocky, int nhom);
 SinhVien* TimSinhVien(const DS_LOPSV& dsLop, const char* masv);
-SinhVien* TimSinhVienTheoMa(const DS_LOPSV &ds, const char* maSv, char* outMaLop = NULL);
-MonHoc* TimMonHocTheoMa(treeMH root, const char* maMH);
-LopTinChi* TimLTCTheo4DK(List_LTC &ds, const char* nienkhoa, int hocky, const char* maMh, int nhom);
-int ThemSVVaoLTC(LopTinChi* ltc, const char* maSv);
-void HuyLTC(List_LTC& ds, int maLtc);
 
 #endif // STRUCTURES_H

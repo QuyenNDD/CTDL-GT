@@ -56,7 +56,20 @@ template <> constexpr inline auto MainWindow::qt_create_metaobjectdata<qt_meta_t
         "on_btnNDSearch_clicked",
         "on_lineNDMH_textChanged",
         "on_btnNDSave_clicked",
-        "on_tblMH_cellClicked"
+        "on_tblMH_cellClicked",
+        "on_tblLopSV_cellClicked",
+        "on_tblSV_cellClicked",
+        "on_ThemLSV_clicked",
+        "on_SuaLSV_clicked",
+        "on_XoaLSV_clicked",
+        "on_LuuLSV_clicked",
+        "on_btnMaLop_SV_clicked",
+        "on_btnThemSV_clicked",
+        "on_btnXoaSV_clicked",
+        "on_btnSuaSV_clicked",
+        "on_btnLuuSV_clicked",
+        "on_btnDiemTB_clicked",
+        "on_btnDiemTK_clicked"
     };
 
     QtMocHelpers::UintData qt_methods {
@@ -98,6 +111,36 @@ template <> constexpr inline auto MainWindow::qt_create_metaobjectdata<qt_meta_t
         QtMocHelpers::SlotData<void(int, int)>(18, 2, QMC::AccessPrivate, QMetaType::Void, {{
             { QMetaType::Int, 13 }, { QMetaType::Int, 14 },
         }}),
+        // Slot 'on_tblLopSV_cellClicked'
+        QtMocHelpers::SlotData<void(int, int)>(19, 2, QMC::AccessPrivate, QMetaType::Void, {{
+            { QMetaType::Int, 13 }, { QMetaType::Int, 14 },
+        }}),
+        // Slot 'on_tblSV_cellClicked'
+        QtMocHelpers::SlotData<void(int, int)>(20, 2, QMC::AccessPrivate, QMetaType::Void, {{
+            { QMetaType::Int, 13 }, { QMetaType::Int, 14 },
+        }}),
+        // Slot 'on_ThemLSV_clicked'
+        QtMocHelpers::SlotData<void()>(21, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'on_SuaLSV_clicked'
+        QtMocHelpers::SlotData<void()>(22, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'on_XoaLSV_clicked'
+        QtMocHelpers::SlotData<void()>(23, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'on_LuuLSV_clicked'
+        QtMocHelpers::SlotData<void()>(24, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'on_btnMaLop_SV_clicked'
+        QtMocHelpers::SlotData<void()>(25, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'on_btnThemSV_clicked'
+        QtMocHelpers::SlotData<void()>(26, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'on_btnXoaSV_clicked'
+        QtMocHelpers::SlotData<void()>(27, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'on_btnSuaSV_clicked'
+        QtMocHelpers::SlotData<void()>(28, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'on_btnLuuSV_clicked'
+        QtMocHelpers::SlotData<void()>(29, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'on_btnDiemTB_clicked'
+        QtMocHelpers::SlotData<void()>(30, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'on_btnDiemTK_clicked'
+        QtMocHelpers::SlotData<void()>(31, 2, QMC::AccessPrivate, QMetaType::Void),
     };
     QtMocHelpers::UintData qt_properties {
     };
@@ -135,6 +178,19 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 11: _t->on_lineNDMH_textChanged((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1]))); break;
         case 12: _t->on_btnNDSave_clicked(); break;
         case 13: _t->on_tblMH_cellClicked((*reinterpret_cast< std::add_pointer_t<int>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<int>>(_a[2]))); break;
+        case 14: _t->on_tblLopSV_cellClicked((*reinterpret_cast< std::add_pointer_t<int>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<int>>(_a[2]))); break;
+        case 15: _t->on_tblSV_cellClicked((*reinterpret_cast< std::add_pointer_t<int>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<int>>(_a[2]))); break;
+        case 16: _t->on_ThemLSV_clicked(); break;
+        case 17: _t->on_SuaLSV_clicked(); break;
+        case 18: _t->on_XoaLSV_clicked(); break;
+        case 19: _t->on_LuuLSV_clicked(); break;
+        case 20: _t->on_btnMaLop_SV_clicked(); break;
+        case 21: _t->on_btnThemSV_clicked(); break;
+        case 22: _t->on_btnXoaSV_clicked(); break;
+        case 23: _t->on_btnSuaSV_clicked(); break;
+        case 24: _t->on_btnLuuSV_clicked(); break;
+        case 25: _t->on_btnDiemTB_clicked(); break;
+        case 26: _t->on_btnDiemTK_clicked(); break;
         default: ;
         }
     }
@@ -159,14 +215,14 @@ int MainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 14)
+        if (_id < 27)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 14;
+        _id -= 27;
     }
     if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 14)
+        if (_id < 27)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 14;
+        _id -= 27;
     }
     return _id;
 }
