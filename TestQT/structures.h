@@ -67,7 +67,7 @@ struct List_LTC {
 };
 
 extern treeMH dsMH;
-
+void GhiMonHoc_LNR(treeMH t, FILE* f, int& count); 
 bool hasSpace(const QString &str);
 int DemSoLuongMonHoc(treeMH root);
 treeMH SearchTree(treeMH root,const char* mamh);

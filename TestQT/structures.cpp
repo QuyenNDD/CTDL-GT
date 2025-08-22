@@ -6,6 +6,15 @@
 #include <QMessageBox>
 #include <QDebug>
 //Mon hoc
+void GhiMonHoc_LNR(treeMH t, FILE* f, int& count) {
+    if (t == nullptr) return;
+    GhiMonHoc_LNR(t->left, f, count);
+
+    fprintf(f, "%s|%s|%d|%d\n", t->mh.MAMH, t->mh.TENMH, t->mh.STCLT, t->mh.STCTH);
+    count++;
+
+    GhiMonHoc_LNR(t->right, f, count);
+}
 
 bool hasSpace(const QString &str) {
     QByteArray bytes = str.toUtf8();
