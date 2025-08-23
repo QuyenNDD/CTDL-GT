@@ -17,6 +17,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tblND->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     ui->tblSV->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     ui->tblLopSV->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->tblKQ->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->tblDiemTK->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     connect(ui->lineMaMH, &QLineEdit::textChanged,
             this, &MainWindow::on_lineMaMH_textChanged);
     connect(ui->lineMaMH, &QLineEdit::textChanged,
@@ -25,13 +27,12 @@ MainWindow::MainWindow(QWidget *parent)
         bool coDongDuocChon = !ui->tblMH->selectedItems().isEmpty();
         ui->btnSuaMH->setEnabled(coDongDuocChon);
         ui->btnXoaMH->setEnabled(coDongDuocChon);
-
+    });
     connect(ui->tblSV, &QTableWidget::cellClicked,
-        this, &MainWindow::on_tblSV_cellClicked);
+            this, &MainWindow::on_tblSV_cellClicked);
     docDuLieuTuFile();
     connect(ui->tblLopSV, &QTableWidget::cellClicked,
-        this, &MainWindow::on_tblLopSV_cellClicked);
-    });
+            this, &MainWindow::on_tblLopSV_cellClicked);
     docDuLieuTuFile();
     QRegularExpression rx("[A-Za-z]+");
     QValidator *validator = new QRegularExpressionValidator(rx, this);
@@ -1538,10 +1539,10 @@ void MainWindow::on_btnDiemTB_clicked()
         return;
     }
 
-    // ✅ Hiện thông tin lớp vào lineEdit
+    //Hiện thông tin lớp vào lineEdit
     ui->hienLopDTB->setText(QString::fromUtf8(lop->MALOP));
 
-    // ✅ Tính tổng số tín chỉ của lớp
+    //Tính tổng số tín chỉ của lớp
     int tongTinChi = 0;
     for (PTRSV p = lop->FirstSV; p != nullptr; p = p->next) {
         tongTinChi += TongTinChiCuaSV(p->sv, dsLTC, dsMH);
@@ -1549,9 +1550,7 @@ void MainWindow::on_btnDiemTB_clicked()
     }
     ui->lineEditTinChiK->setText(QString::number(tongTinChi));
 
-    // =====================
     // Hiển thị bảng điểm TB
-    // =====================
     ui->tblKQ->clearContents();
     ui->tblKQ->setRowCount(0);
 
@@ -1573,7 +1572,7 @@ void MainWindow::on_btnDiemTB_clicked()
         ui->tblKQ->setItem(row, 3, new QTableWidgetItem(QString::number(diemTB, 'f', 2)));
     }
 
-    ui->tblKQ->resizeColumnsToContents();
+    ui->tblKQ->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 }
 
 
@@ -1656,5 +1655,5 @@ void MainWindow::on_btnDiemTK_clicked()
         }
     }
 
-    ui->tblDiemTK->resizeColumnsToContents();
+    ui->tblDiemTK->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 }

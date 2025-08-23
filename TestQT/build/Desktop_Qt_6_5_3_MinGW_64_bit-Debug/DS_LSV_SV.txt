@@ -1,6 +1,7 @@
 2
 D20CQCN01|CONG NGHE THONG TIN
-	3
+	4
+	B20DCCN007|Nguyen Duc Doan|Quyen|Nam|032742990|nddq@gmail.com
 	B20DCCN001|Nguyen Van|A|Nam|0123456789|a@gmail.com
 	B20DCCN002|Tran Thi|B|Nu|0987654321|b@gmail.com
 	B20DCCN003|Le Hoang|C|Nam|0777888999|c@gmail.com
