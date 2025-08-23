@@ -1246,6 +1246,9 @@ void MainWindow::on_ThemLSV_clicked()
     dsLop.nodes[dsLop.n++] = lop;
 
     hienThiDanhSachLopSV(dsLop);
+
+    QMessageBox::information(this, "Thành công",
+                             "Đã thêm lớp: " + ma + " - " + ten);
 }
 
 
@@ -1257,6 +1260,8 @@ void MainWindow::on_SuaLSV_clicked()
         return;
     }
 
+    QString oldTen = QString::fromUtf8(dsLop.nodes[row].TENLOP);
+
     QString ten = ui->txtTenLop->text().trimmed();
     if (ten.isEmpty()) {
         QMessageBox::warning(this, "Lỗi", "Tên lớp không được rỗng!");
@@ -1266,6 +1271,11 @@ void MainWindow::on_SuaLSV_clicked()
     strcpy(dsLop.nodes[row].TENLOP, ten.toUtf8().constData());
 
     hienThiDanhSachLopSV(dsLop);
+
+    QMessageBox::information(this, "Thành công",
+                             "Đã sửa lớp: " + QString::fromUtf8(dsLop.nodes[row].MALOP) +
+                                 "\nTên cũ: " + oldTen +
+                                 "\nTên mới: " + ten);
 }
 
 
@@ -1285,6 +1295,9 @@ void MainWindow::on_XoaLSV_clicked()
         delete tmp;
     }
 
+    QString ma = QString::fromUtf8(dsLop.nodes[row].MALOP);
+    QString ten = QString::fromUtf8(dsLop.nodes[row].TENLOP);
+
     // dịch trái mảng
     for (int i = row; i < dsLop.n - 1; i++) {
         dsLop.nodes[i] = dsLop.nodes[i + 1];
@@ -1292,6 +1305,9 @@ void MainWindow::on_XoaLSV_clicked()
     dsLop.n--;
 
     hienThiDanhSachLopSV(dsLop);
+
+    QMessageBox::information(this, "Thành công",
+                             "Đã xóa lớp: " + ma + " - " + ten);
 }
 
 
@@ -1422,6 +1438,10 @@ void MainWindow::on_btnThemSV_clicked()
     lopHienTai->FirstSV = node;
 
     hienThiSV_Lop(lopHienTai);
+
+    QMessageBox::information(this, "Thành công",
+                             "Đã thêm sinh viên: " + QString::fromUtf8(sv.MASV) +
+                                 " - " + QString::fromUtf8(sv.HO) + " " + QString::fromUtf8(sv.TEN));
 }
 
 
@@ -1451,6 +1471,8 @@ void MainWindow::on_btnXoaSV_clicked()
         return;
     }
 
+    QString hoTen = QString::fromUtf8(cur->sv.HO) + " " + QString::fromUtf8(cur->sv.TEN);
+
     if (prev == nullptr) {
         lopHienTai->FirstSV = cur->next;
     } else {
@@ -1459,6 +1481,9 @@ void MainWindow::on_btnXoaSV_clicked()
     delete cur;
 
     hienThiSV_Lop(lopHienTai);
+
+    QMessageBox::information(this, "Thành công",
+                             "Đã xóa sinh viên: " + maSV + " - " + hoTen);
 }
 
 
@@ -1484,6 +1509,8 @@ void MainWindow::on_btnSuaSV_clicked()
         QMessageBox::warning(this, "Lỗi", "Không tìm thấy sinh viên!");
         return;
     }
+
+    QString oldHoTen = QString::fromUtf8(cur->sv.HO) + " " + QString::fromUtf8(cur->sv.TEN);
 
     // Lấy dữ liệu mới
     char ho[51], ten[11], sdt[16], email[51];
@@ -1514,6 +1541,13 @@ void MainWindow::on_btnSuaSV_clicked()
     strcpy(cur->sv.Email, email);
 
     hienThiSV_Lop(lopHienTai);
+
+    QString newHoTen = QString::fromUtf8(cur->sv.HO) + " " + QString::fromUtf8(cur->sv.TEN);
+
+    QMessageBox::information(this, "Thành công",
+                             "Đã sửa sinh viên: " + maSV +
+                                 "\nTên cũ: " + oldHoTen +
+                                 "\nTên mới: " + newHoTen);
 }
 
 
